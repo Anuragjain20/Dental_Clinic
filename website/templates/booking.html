@@ -1,0 +1,268 @@
+{% extends "base.html" %} {% block content %}{% load static %}{% load blog_tags %}
+
+
+<div id="app">
+
+    <div class="conatiner-fluid my-4">
+        <!-- Book An Oppointment Area Start -->
+        <section class="book-an-oppointment-area section-padding-100 bg-img bg-gradient-overlay jarallax clearfix" style="background-image: url({% static 'website/img/bg-img/12.jpg' %});">
+            <div class="container">
+                <div class="row">
+                    <!-- Section Heading -->
+                    <div class="col-12">
+                        <div class="section-heading text-center white">
+                            <h2>[[title]]</h2>
+                            <div class="line"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Appointment Form -->
+                        <div class="appointment-form">
+                            <form>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-30">
+                                            <input type="text" v-model="selected_name" class="form-control" placeholder="Your Name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-30">
+                                            <input type="text" v-model="selected_phone" class="form-control" placeholder="Your Phone" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-30">
+                                            <input type="email" v-model="selected_email" class="form-control" placeholder="Your Email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-30">
+                                            <select class="form-control" v-model="selected_doctor" @change="getSlots('doctor')">
+                          <option value="" selected="selected" hidden="hidden" >Choose Your Doctor</option>
+                          <option v-for="doctor in doctors" :value="doctor.id">[[doctor.name]]</option>
+                        </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-30">
+                                            <input type="date" v-model="selected_date" class="form-control" @change="getSlots('date')">
+                                            <!--   <select name="your-scheldule" class="form-control">
+                          <option value="Choose Your Scheldule">Choose Your Scheldule</option>
+                          <option value="9 AM to 10 AM">9 AM to 10 AM</option>
+                          <option value="11 AM to 12 PM">11 AM to 12 PM</option>
+                          <option value="2 PM to 4 PM">2 PM to 4 PM</option>
+                          <option value="8 PM to 10 PM">8 PM to 10 PM</option>
+                        </select>-->
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-30 " v-on:click="timeslothover">
+                                            <select name="your-time" v-model="selected_slot" class="form-control" :disabled='isDisabled'>
+                          <option value="" selected="selected" hidden="hidden">Choose Your Scheldule</option>
+                            <option v-for="slot in slots" :value="slot.id">[[slot.start_time]] - [[slot.end_time]]</option>
+                         
+                        </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group mb-30">
+                                            <textarea v-model="selected_message" class="form-control" placeholder="Your Message"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 text-center">
+                                        <a type="submit" v-on:click="submitformdet" class="btn dento-btn">Booking Now</a>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+
+{% endblock %} {% block javascripts %}
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+    const app = new Vue({
+        delimiters: ['[[', ']]'],
+        el: '#app',
+        data: {
+            title: "Book An Appointment",
+            doctors: [],
+
+            slots: [],
+            response_data: [],
+            selected_doctor: "",
+            selected_date: "",
+            selected_slot: "",
+
+            selected_name: "",
+            selected_email: "",
+            selected_phone: "",
+            selected_message: "",
+
+        },
+        methods: {
+            timeslothover: function() {
+                if (this.selected_doctor == "") {
+                    alert("Please select a doctor");
+                    return;
+                }
+                if (this.selected_date == "") {
+                    alert("Please select a date");
+                    return;
+                }
+
+            },
+
+            checkform: function() {
+                if (this.selected_doctor == "") {
+                    alert("Please select a doctor");
+                    return true;
+                }
+                if (this.selected_date == "") {
+                    alert("Please select a date");
+                    return true;
+                }
+                if (this.selected_slot == "") {
+                    alert("Please select a slot");
+                    return true;
+                }
+                if (this.selected_name == "") {
+                    alert("Please enter your name");
+                    return true;
+                }
+                if (this.selected_email == "") {
+                    alert("Please enter your email");
+                    return true;
+                }
+                if (this.selected_phone == "") {
+                    alert("Please enter your phone");
+                    return true;
+                }
+                if (this.selected_message == "") {
+                    alert("Please enter your message");
+                    return true;
+                }
+                return false;
+
+            },
+
+            getDoctor: function() {
+                _this = this;
+                axios.get('/doctors/')
+                    .then(function(response) {
+                        _this.doctors = response.data;
+                        console.log(_this.doctors[0]);
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            },
+
+            getSlots: function(type) {
+                _this = this;
+                if (type == "doctor") {
+                    _this.date = "";
+                    _this.selected_slot = "";
+                    _this.selected_date = "";
+
+                }
+                if (_this.selected_doctor != "" && _this.selected_date != "") {
+                    _this.selected_slot = "";
+                    _this.slots = [];
+                    console.log('/getslots/?doctor=' + _this.selected_doctor + '&date=' + _this.selected_date)
+                    axios.get('/getslots/?doctor=' + _this.selected_doctor + '&date=' + _this.selected_date)
+                        .then(function(response) {
+                            if (response.data.status) {
+                                _this.date = "";
+                                _this.selected_slot = "";
+                                _this.selected_date = "";
+                                alert(response.data.status);
+                                return;
+                            }
+                            _this.slots = response.data;
+                            console.log(_this.slots);
+                        })
+                        .catch(function(error) {
+                            console.log(error);
+                        });
+                } else {
+                    console.log("else")
+                    console.log(_this.selected_doctor);
+                    console.log(_this.selected_date);
+
+                }
+
+
+            },
+
+
+            submitformdet: function(e) {
+                e.preventDefault();
+                _this = this;
+                if (_this.checkform()) {
+                    return;
+                }
+
+
+                form = {
+                    doctor: _this.selected_doctor,
+                    date: _this.selected_date,
+                    slot: _this.selected_slot,
+                    name: _this.selected_name,
+                    email: _this.selected_email,
+                    phone: _this.selected_phone,
+                    message: _this.selected_message
+                }
+
+
+                console.log(form);
+                axios.post('/bookappointment/', form)
+                    .then(function(response) {
+                        _this.response_data = response.data;
+                        console.log(_this.response_data);
+                        if (_this.response_data.Success) {
+
+                            alert("Your appointment has been booked successfully");
+                            window.location.href = "/";
+                            return;
+                        } else {
+
+                            alert("Some Error Occured");
+                            /*reload page*/
+                            /*location.reload();*/
+                        }
+
+                    })
+                    .catch(function(error) {
+                        console.log(error);
+                    });
+            },
+
+        },
+        created() {
+            this.getDoctor();
+            /*console.log(this.doctors);*/
+        },
+        computed: {
+            isDisabled: function() {
+                return this.selected_doctor == "" || this.selected_date == "" || this.slots.length == 0;
+
+            }
+        }
+
+    })
+</script>
+
+{% endblock %}
