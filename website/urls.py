@@ -14,4 +14,5 @@ urlpatterns = [
          path('doctors/',views.Doctor_list.as_view(),name='doctors'),
          path('bookappointment/',views.Book_Appointment.as_view(),name='bookappointment'),
          path('booking/',views.bookingview,name='booking'),
+         path('show_pdf_demo/',views.show_pdf_demo,name='show_pdf_demo'),
 ]

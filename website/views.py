@@ -9,7 +9,9 @@ from .serializers import *
 from rest_framework.generics import ListAPIView
 from .utils import *
 from datetime import datetime
-
+import uuid
+from django.core.mail import EmailMessage
+from django.conf import settings
 # Create your views here.
 def home(request):
     return render(request,'home.html',{})
@@ -152,9 +154,35 @@ class Book_Appointment(APIView):
                 if obj.available_slots == 0:
                     obj.is_available = False
                 obj.save()
-
-
                 serializers.save()
+                data = {
+                    'name': request.data['name'],
+                    'conformationid': str(uuid.uuid4()) + "--" + str(obj.available_slots),
+                    'date': request.data['date'],
+                    'time_slot': str(obj.start_time) + "-" + str(obj.end_time),
+                    'doctor': obj.doctor.name,
+                    'email': request.data['email'],
+                    'phone': request.data['phone'],
+                    'message': request.data['message'],
+                   "STATIC_ROOT": settings.STATIC_URL+"website/img/core-img/logo.png"
+                    }
+                file_name,ret = save_pdf(data)
+                file_name = str(settings.BASE_DIR) + f'/pdfs/{file_name}.pdf'
+                #sending email with file
+                if not ret:
+                    return Response({"Error": "error something went wrong"})
+                    
+                email = EmailMessage(
+                    'Appointment Confirmation - Dento',
+                    f'Your appointment is confirmed for checkup at Dento on {request.data["date"]}.\nTime Slot is between {data["time_slot"]}.\nPlease check attached pdf for more details.',
+                    settings.EMAIL_HOST_USER, [request.data['email']])
+                email.attach_file(file_name)
+                email.send(fail_silently=False)
+    
+
+
+                
+
                 return Response({"Success":"success"})
             else:
                 
@@ -164,3 +192,23 @@ class Book_Appointment(APIView):
         except Exception as e:
             print(e)
             return Response({"Error": "error something went wrong", "status": "500"})
+
+
+
+
+def show_pdf_demo(request):
+    data = {
+        'name': 'Anurag Jain',
+        'conformationid': '123456789',
+        'date': '2019-12-12',
+        'time_slot': '12:00-12:30',
+        'doctor': 'Dr. Anurag Jain',
+        'email': 'example@gogle.com',
+        'phone': '1234567890',
+        'message': 'hello',
+        "STATIC_ROOT": settings.STATIC_URL+"website/img/core-img/logo.png"
+
+        
+    }
+    return render(request,'gen_pdf.html',data)
+
