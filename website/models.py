@@ -20,7 +20,7 @@ class Blog(models.Model):
         ('published', 'Published'),
         )
     title = models.CharField(max_length=250)
-    image = models.ImageField(upload_to = 'images/', blank=True)
+    image = models.ImageField(upload_to = 'media/image', blank=True)
     slug = models.SlugField(max_length=250,  unique_for_date='publish')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts')
     body = models.TextField()
