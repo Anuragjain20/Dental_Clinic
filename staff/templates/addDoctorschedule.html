@@ -1,0 +1,104 @@
+{% include 'basic.html' %} {% block content %}
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <h4 class="page-title">Add Doctor Schedule</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Doctors</label>
+                                <select class="select" name='doctor'>
+                                    {% for doctor in doc_choices %}
+                                    <option value="{{doctor.empid}}">{{doctor.first_name}} {{doctor.last_name}}</option>
+                                    {% endfor %}
+
+                                   
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Start Time</label>
+
+                                <input type="time" class="form-control" id="datetimepicker3" name="start_time">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>End Time</label>
+
+                                <input type="time" class="form-control" id="datetimepicker4" name="end_time">
+
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Start Date <span class="text-danger">*</span></label>
+
+                                <input class="form-control " type="date" id="start_date" name="start_date">
+
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>End Date <span class="text-danger">*</span></label>
+
+                                <input class="form-control " type="date" id="end_date" name="end_date">
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="col-sm-6">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="select" name='status'>
+                                {% for value,text in choices.status %}
+                                <option value="{{value}}">{{text}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                    </div> -->
+
+                    <div class="m-t-20 text-center">
+                        <button class="btn btn-primary submit-btn">Create Schedule</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+{% endblock %} {% block scripts %}
+
+
+<script>
+    var date = new Date();
+    date.setDate(date.getDate() + 4);
+
+
+
+    var dateControl = document.getElementById("start_date");
+    dateControl.min = new Date().toISOString().split("T")[0];
+    var dateControl = document.getElementById("end_date");
+    dateControl.max = date.toISOString().split("T")[0];
+</script>
+
+
+{% endblock %}

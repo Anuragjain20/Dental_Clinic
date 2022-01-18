@@ -12,6 +12,7 @@ from datetime import datetime
 import uuid
 from django.core.mail import EmailMessage
 from django.conf import settings
+from staff.models import *
 # Create your views here.
 def home(request):
     return render(request,'home.html',{})
@@ -115,16 +116,21 @@ class SlotsView(APIView):
                 doctor = request.GET.get('doctor')
                 
                 print(doctor)
-                doctor = Doctor.objects.get(id=doctor)
+                doctor = DoctorModel.objects.get(empid=doctor)
                 date = datetime.strptime(date, '%Y-%m-%d').date()
                 val = check_doctor_is_available(doctor,date)
                 print(val)
             if val == False:
                 return Response({'status':'not available'})
             
-            slot = Slots.objects.filter(date=date,doctor=doctor)    
-            print(slot)
+            slot = Slots.objects.filter(date=date,doctor=doctor)  
+
+            if  not slot:
+                return Response({'status':'not available'})
+            
+     
             serializer = SlotsSerializer( slot, many=True)
+
             
                 
             return Response(serializer.data)       
@@ -136,7 +142,7 @@ class SlotsView(APIView):
 
 class Doctor_list(ListAPIView):
     serializer_class = DoctorSerializer
-    queryset = Doctor.objects.all()
+    queryset = DoctorModel.objects.all()
 
 
 class Book_Appointment(APIView):
@@ -147,6 +153,8 @@ class Book_Appointment(APIView):
             obj = Slots.objects.get(id=request.data['slot'])
             if obj.is_available == False:
                 return Response({"Error": "Slot is already booked"})
+            request.data['doctor']= DoctorModel.objects.get(empid=request.data['doctor'])  
+            request.data['conformation_id']= str(uuid.uuid4()) + "--" + str(obj.available_slots)             
             serializers = AppointmentSerializer(data=request.data)
             if serializers.is_valid():
                 
@@ -156,19 +164,24 @@ class Book_Appointment(APIView):
                 obj.save()
                 serializers.save()
                 data = {
-                    'name': request.data['name'],
-                    'conformationid': str(uuid.uuid4()) + "--" + str(obj.available_slots),
-                    'date': request.data['date'],
+                    'name':serializers.data['name'],
+                    'email':serializers.data['email'],
+                    'phone':serializers.data['phone'],
+                    'date':serializers.data['date'],
+                    
+                    'conformationid': serializers.data['conformation_id'],
+                
                     'time_slot': str(obj.start_time) + "-" + str(obj.end_time),
-                    'doctor': obj.doctor.name,
-                    'email': request.data['email'],
-                    'phone': request.data['phone'],
-                    'message': request.data['message'],
+                    'doctor': obj.doctor.first_name+" "+obj.doctor.last_name,
+                   
+                    'message': serializers.data['message'],
                    "STATIC_ROOT": settings.STATIC_URL+"website/img/core-img/logo.png"
                     }
                 file_name,ret = save_pdf(data)
                 file_name = str(settings.BASE_DIR) + f'/pdfs/{file_name}.pdf'
+                print(file_name)
                 #sending email with file
+
                 if not ret:
                     return Response({"Error": "error something went wrong"})
                     
@@ -191,7 +204,7 @@ class Book_Appointment(APIView):
 
         except Exception as e:
             print(e)
-            return Response({"Error": "error something went wrong", "status": "500"})
+           # return Response({"Error": "error something went wrong", "status": "500"})
 
 
 

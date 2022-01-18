@@ -22,7 +22,7 @@
                         <!-- Appointment Form -->
                         <div class="appointment-form">
                             <form>
-
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-30">
@@ -43,7 +43,7 @@
                                         <div class="form-group mb-30">
                                             <select class="form-control" v-model="selected_doctor" @change="getSlots('doctor')">
                           <option value="" selected="selected" hidden="hidden" >Choose Your Doctor</option>
-                          <option v-for="doctor in doctors" :value="doctor.id">[[doctor.name]]</option>
+                          <option v-for="doctor in doctors" :value="doctor.empid">[[doctor.first_name]] [[doctor.last_name]]</option>
                         </select>
                                         </div>
                                     </div>
