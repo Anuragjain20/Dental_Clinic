@@ -1,0 +1,81 @@
+{% include 'basic.html' %} {% block content %} {% load blog_tags %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <h4 class="page-title">Update Blog</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Title <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="title" value="{{blog.title}}" required>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Author</label>
+                                <select class="select" name="author" disabled>
+                                    {% for doc in doc_choices %}
+                                    <option value="{{doc.empid}}" {% if doc.empid == blog.author.empid   %} selected{% endif %} disabled>{{doc.first_name}} {{doc.last_name}}</option>
+                                    {% endfor %}
+
+                                   
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group mx-auto">
+                                <label>Blog Description</label>
+                                <textarea cols="30" rows="30" class="form-control" value="{{blog.body}}" name="body_blog">{{blog.body}}</textarea>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="select" name='status'>
+                                    {% for value,text in choices %}
+                                    <option value="{{value}}"  {% if blog.status == value %} selected {% endif %}>{{text}}</option>
+                                  {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Image </label>
+
+                                <input class="form-control" type="file" name='image' value="{{blog.image}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="m-t-20 text-center">
+                        <button class="btn btn-primary submit-btn">Update Blog</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

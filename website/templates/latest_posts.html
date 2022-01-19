@@ -1,5 +1,5 @@
 <!-- ***** Blog Area Start ***** -->
-
+{% load blog_tags %}
 <section class="dento-blog-area section-padding-100-0 clearfix">
     <div class="container">
         <div class="row">
@@ -21,14 +21,15 @@
                     <a href="{{blog.get_absolute_url}}">
                         <img src="/static/{{blog.image}}" alt="">
                     </a>
+
                     <!-- Blog Content -->
                     <div class="blog-content">
                         <a href="{{blog.get_absolute_url}}" class="post-title">{{blog.title}}</a>
                         <br>
-                        <p>{{blog.body|truncatewords:30}}</p>
+                        <p>{{blog.body|truncatewords:30|markdown|safe}}</p>
                         <div class="post-meta">
                             <a href="#"><i class="icon_clock_alt"></i> {{blog.publish}}</a>
-                            <a href="#"><i class="icon_pencil-edit"></i> {{blog.author}}</a>
+                            <a href="#"><i class="icon_pencil-edit"></i> {{blog.author.first_name}} {{blog.author.last_name}}</a>
                         </div>
                     </div>
                 </div>

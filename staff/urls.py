@@ -22,5 +22,9 @@ urlpatterns = [
     path('doctorSchedule/gen_slot/<int:id>',views.gen_slots,name='gen_slot'),
     path('viewAppointment/',views.viewAppointment,name='viewAppointment'),
     path('viewAppointment/<id>',views.viewParticularAppointment,name='viewParticularAppointment'),
-    
+    path('blogs/',views.viewAllBlogs,name='blog'),
+    path("addBlog/",views.addBlog,name='addBlog'),
+    path("blogs/<id>",views.view_blog_part,name='view_part_Blog'),
+    path("blogs/delete/<id>",views.deleteBlog,name='delete_blog'),
+    path("blogs/edit/<id>",views.editBlog,name='edit_blog'),
 ]

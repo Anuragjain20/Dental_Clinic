@@ -3,6 +3,8 @@ from website.models import *
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import *
+import markdown
+
 
 # Create your views here.
 
@@ -253,3 +255,92 @@ def viewAppointment(request):
 def viewParticularAppointment(request,id):
     appointment = BookAppointment.objects.get(conformation_id=id)
     return render(request, 'viewParticularAppointment.html', {'appointment': appointment})
+
+def viewAllBlogs(request):
+    blogs = Blog.objects.all().order_by('-created')
+    return render(request, 'total_blogs.html', {'blogs': blogs})
+
+
+
+def addBlog(request):
+    try:
+
+        if request.method == 'POST':
+            author = DoctorModel.objects.get(empid=request.POST['author'])
+        #     md = markdown.Markdown(extensions=['extra'])
+        #     body_blog = md.convert(request.POST['body_blog'])
+            body_blog = request.POST['body_blog']
+            form = {
+                'title': request.POST['title'],
+                'body': body_blog,
+               
+                'status': request.POST['status'],
+                'author': author,
+            
+            }
+            if request.FILES:
+                form['image'] = request.FILES['image']
+
+        
+            blog_obj = Blog(**form)
+            blog_obj.save()
+            print("*"*50)
+            messages.success(request, 'Blog Added Successfully')
+            return redirect('/staff/blogs/')
+        else:
+        
+            statuschoice=(('draft', 'Draft'),('published', 'Published'))
+            doctor_objs = DoctorModel.objects.filter(status='active')
+
+            return render(request, 'addBlog.html', {'choices': statuschoice, 'doc_choices': doctor_objs})
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Blog Not Added')
+        return redirect('/staff/blogs/')
+
+
+def view_blog_part(request,id):
+    blog = Blog.objects.get(id=id)
+    return render(request, 'view_blog_part.html', {'blog': blog})
+
+
+
+def deleteBlog(request,id):
+    try:
+        blog = Blog.objects.get(id=id)
+        blog.delete()
+        messages.success(request, 'Blog Deleted Successfully')
+        return redirect('/staff/blogs/')
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Blog Not Deleted')
+        return redirect('/staff/blogs/')
+
+
+def editBlog(request,id):
+    try:
+        blog = Blog.objects.get(id=id)
+        if request.method == 'POST':
+          
+            # md = markdown.Markdown(extensions=['extra'])
+            # body_blog = md.convert(request.POST['body_blog'])       
+            body_blog = request.POST['body_blog']                 
+            form = {
+                'title': request.POST['title'],
+                'body': body_blog,
+                'status': request.POST['status'],
+            
+            }
+            for key, value in form.items():
+                setattr(blog, key, value)
+            blog.save()
+            messages.success(request, 'Blog Updated Successfully')
+            return redirect('/staff/blogs/'+str(id))
+        else:
+            statuschoice=(('draft', 'Draft'),('published', 'Published'))
+            doctor_objs = DoctorModel.objects.filter(status='active')            
+            return render(request, 'editBlog.html', {'blog': blog, 'choices': statuschoice, 'doc_choices': doctor_objs})
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Blog Not Updated')
+        return redirect('/staff/blogs/')        

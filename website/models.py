@@ -5,6 +5,7 @@ from django.urls import reverse
 from datetime import date, datetime,timedelta
 from staff.models import DoctorModel
 
+from django.utils.text import slugify
 
 
 class PublishedManager(models.Manager):
@@ -35,6 +36,10 @@ class Blog(models.Model):
         ordering = ('-publish',)
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        super(Blog, self).save(*args, **kwargs)    
 
     def get_absolute_url(self):
         return reverse('website:post_detail',args=[self.publish.year,self.publish.month,self.publish.day, self.slug])        

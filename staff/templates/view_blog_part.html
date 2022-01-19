@@ -1,0 +1,54 @@
+{% extends "basic.html" %} {% block content %} {% load blog_tags %}
+
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-sm-12">
+                <h4 class="page-title text-center">Blog View</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="blog-view">
+                    <article class="blog blog-single-post">
+                        <h3 class="blog-title">{{blog.title}}</h3>
+                        <div class="blog-info clearfix">
+                            <div class="post-left">
+                                <ul>
+                                    <li><i class="fa fa-calendar"></i> <span>{{blog.publish}}</span></li>
+                                    <li><i class="fa fa-user-o"></i> <span>{{blog.author.first_name}} {{blog.author.last_name}}</span></li>
+                                </ul>
+                            </div>
+                            <div class="post-right">{{blog.status}}</div>
+
+                        </div>
+                        <div class="blog-image">
+                            <a href="#."><img alt="" src="/static/{{blog.image}}" class="img-fluid"></a>
+                        </div>
+                        <div class="blog-content">
+                            {{blog.body| markdown | safe}}
+                        </div>
+
+                    </article>
+
+                </div>
+                <div class="row">
+                    <div class="mx-auto">
+                        <a href="/staff/blogs/delete/{{blog.id}}" class="btn btn-primary btn-rounded mx-3">Delete</a>
+                        <a href="/staff/blogs/edit/{{blog.id}}" class="btn btn-primary btn-rounded">Edit</a>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+{% endblock %}
