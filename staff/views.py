@@ -5,20 +5,26 @@ from django.shortcuts import render, redirect
 from .models import *
 import markdown
 
-
-# Create your views here.
-
+#----------------------------- DashBoard --------------------------------------------------------------
 
 def dashboard(request):
     return render(request, 'dashboard.html')
 
 
+
+
+
+
+#******************************************** Employee Section *****************************************************
+ 
+#------------------------------ List of Employee ---------------------
 def employeeView(request):
     employees = Employee.objects.all().order_by('-created_at')
 
-    return render(request, 'employeelist.html', {'employees': employees})
+    return render(request, 'employee/employeelist.html', {'employees': employees})
 
 
+#------------------------------ Add Employee -------------------------
 def addEmployee(request):
 
     try:
@@ -48,9 +54,9 @@ def addEmployee(request):
         print("---------------")
         print(e)
 
-    return render(request, 'addemployee.html', {'choices': choices})
+    return render(request, 'employee/addemployee.html', {'choices': choices})
 
-
+#------------------------------ Delete Employe -----------------------
 def delete_employee(request, slug):
 
     try:
@@ -64,7 +70,7 @@ def delete_employee(request, slug):
         messages.error(request, 'Employee Not Deleted')
         return redirect('/staff/employee/')
 
-
+#------------------------------ Edit Employe --------------------------
 def editEmployee(request, slug):
 
     try:
@@ -92,34 +98,28 @@ def editEmployee(request, slug):
             messages.success(request, 'Employee Updated Successfully')
             return redirect('/staff/employee/')
         else:
-            return render(request, 'edit_employee.html', {'emp': emp, 'choices': choices})
+            return render(request, 'employee/edit_employee.html', {'emp': emp, 'choices': choices})
     except Exception as e:
         print(e)
         messages.error(request, 'Employee Not Found')
         return redirect('/staff/employee/')             
-    
 
-def delete_doctor(request, slug):
-
-    try:
-        print(slug)
-        doc = DoctorModel.objects.get(slug=slug)
-        doc.delete()
-        messages.success(request, 'Employee Deleted Successfully')
-        return redirect('/staff/doctors/')
-    except Exception as e:
-        print(e)
-        messages.error(request, 'Employee Not Deleted')
-        return redirect('/staff/doctors/')
+#******************************************** End of Employee Section ********************************************
 
 
 
+
+
+#******************************************** Doctor Section *****************************************************
+
+#-------------------------------------- List of Doctor ----------------------
 def doctorView(request):
     doctor = DoctorModel.objects.all().order_by('-created_at')
 
-    return render(request, 'doctorlist.html', {'doctorview': doctor})
+    return render(request, 'doctors/doctorlist.html', {'doctorview': doctor})
 
 
+#-------------------------------------- Add Doctor ---------------------------
 def addDoctor(request):
 
     try:
@@ -137,6 +137,7 @@ def addDoctor(request):
                 'password': request.POST['password'],
                 'fb_link': request.POST['fb_link'],
                 'tw_link': request.POST['tw_link'],
+                'role': request.POST['role'],
 
 
             }
@@ -147,15 +148,18 @@ def addDoctor(request):
             doc_obj.set_password(form['password'])
             doc_obj.save()
             return redirect('/staff/doctors/')
+        else:
+            return render(request, 'doctors/addDoctor.html', {'choices': choices})
+
 
     except Exception as e:
         print("---------------")
         print(e)
 
-    return render(request, 'addDoctor.html', {'choices': choices})
+    return render(request, 'doctors/addDoctor.html', {'choices': choices})
 
 
-
+#-------------------------------------- Edit Doctor ---------------------------
 def editDoctor(request, slug):
 
     try:
@@ -174,6 +178,7 @@ def editDoctor(request, slug):
                 'password': request.POST['password'],
                 'fb_link': request.POST['fb_link'],
                 'tw_link': request.POST['tw_link'],
+                   'role': request.POST['role'],
 
 
             }
@@ -186,17 +191,44 @@ def editDoctor(request, slug):
             messages.success(request, 'Employee Updated Successfully')
             return redirect('/staff/doctors/')
         else:
-            return render(request, 'editDoctor.html', {'emp': doc, 'choices': choices})
+            return render(request, 'doctors/editDoctor.html', {'emp': doc, 'choices': choices})
     except Exception as e:
         print(e)
         messages.error(request, 'Doctor Not Found')
         return redirect('/staff/doctors/')             
-    
+
+#-------------------------------------- Delete Doctor --------------------------
+def delete_doctor(request, slug):
+
+    try:
+        print(slug)
+        doc = DoctorModel.objects.get(slug=slug)
+        doc.delete()
+        messages.success(request, 'Employee Deleted Successfully')
+        return redirect('/staff/doctors/')
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Employee Not Deleted')
+        return redirect('/staff/doctors/')
+
+
+#******************************************** End of Doctor Section ********************************************
+
+
+
+
+
+
+#******************************************** Doctor Schedule Section ********************************************
+
+#-------------------------------------- List of Doctor Schedule -------------------
 def doctorScheduleView(request):
     doctorsched = DoctorSchedule.objects.all().order_by('-created_at')
 
-    return render(request, 'doctorSchedule.html', {'docshed': doctorsched})
+    return render(request, 'doctorSchedule/doctorSchedule.html', {'docshed': doctorsched})
 
+
+#-------------------------------------- Add Doctor Schedule ------------------------
 def addDoctorSchedule(request):
     
     try:
@@ -221,7 +253,7 @@ def addDoctorSchedule(request):
         else:
             doctor_objs = DoctorModel.objects.filter(status='active')
 
-            return render(request, 'addDoctorschedule.html', {'doc_choices': doctor_objs, 'choices': choices})    
+            return render(request, 'doctorSchedule/addDoctorschedule.html', {'doc_choices': doctor_objs, 'choices': choices})    
 
     except Exception as e:
         
@@ -231,7 +263,7 @@ def addDoctorSchedule(request):
     messages.error(request, 'Schedule Not Added')
     return redirect('/staff/doctorSchedule/')
 
-
+#-------------------------------------- Generate Slots -----------------------------
 def gen_slots(request,id):
     try:
         docshd = DoctorSchedule.objects.get(id=id)
@@ -248,19 +280,40 @@ def gen_slots(request,id):
         messages.error(request, 'Slots Not Generated')
         return redirect('/staff/doctorSchedule/')
 
+#******************************************** End of Doctor Schedule Section ********************************************
+
+
+
+#******************************************** Appointment Section ********************************************
+
+#-------------------------------------- List of Appointment -----------------------------
 def viewAppointment(request):
     appointment = BookAppointment.objects.all().order_by('-created')
-    return render(request, 'viewAppointment.html', {'appointment': appointment})
+    return render(request, 'appointment/viewAppointment.html', {'appointment': appointment})
 
+
+#-------------------------------------- Specific Appointment Details----------------------
 def viewParticularAppointment(request,id):
     appointment = BookAppointment.objects.get(conformation_id=id)
-    return render(request, 'viewParticularAppointment.html', {'appointment': appointment})
+    return render(request, 'appointment/viewParticularAppointment.html', {'appointment': appointment})
+
+#******************************************** End of Appointment Section ********************************************
+
+
+
+
+
+
+#********************************************  Blogs Section ********************************************
+
+#-------------------------------------- List of Blogs -------------------------------
 
 def viewAllBlogs(request):
     blogs = Blog.objects.all().order_by('-created')
-    return render(request, 'total_blogs.html', {'blogs': blogs})
+    return render(request, 'blogs/total_blogs.html', {'blogs': blogs})
 
 
+#-------------------------------------- Add Blog -------------------------------------
 
 def addBlog(request):
     try:
@@ -292,18 +345,19 @@ def addBlog(request):
             statuschoice=(('draft', 'Draft'),('published', 'Published'))
             doctor_objs = DoctorModel.objects.filter(status='active')
 
-            return render(request, 'addBlog.html', {'choices': statuschoice, 'doc_choices': doctor_objs})
+            return render(request, 'blogs/addBlog.html', {'choices': statuschoice, 'doc_choices': doctor_objs})
     except Exception as e:
         print(e)
         messages.error(request, 'Blog Not Added')
         return redirect('/staff/blogs/')
 
+#-------------------------------------- View Specific Blog ----------------------------
 
 def view_blog_part(request,id):
     blog = Blog.objects.get(id=id)
-    return render(request, 'view_blog_part.html', {'blog': blog})
+    return render(request, 'blogs/view_blog_part.html', {'blog': blog})
 
-
+#-------------------------------------- Delete Blog ------------------------------------
 
 def deleteBlog(request,id):
     try:
@@ -316,6 +370,7 @@ def deleteBlog(request,id):
         messages.error(request, 'Blog Not Deleted')
         return redirect('/staff/blogs/')
 
+#-------------------------------------- Edit Blog ----------------------------------------
 
 def editBlog(request,id):
     try:
@@ -339,8 +394,10 @@ def editBlog(request,id):
         else:
             statuschoice=(('draft', 'Draft'),('published', 'Published'))
             doctor_objs = DoctorModel.objects.filter(status='active')            
-            return render(request, 'editBlog.html', {'blog': blog, 'choices': statuschoice, 'doc_choices': doctor_objs})
+            return render(request, 'blogs/editBlog.html', {'blog': blog, 'choices': statuschoice, 'doc_choices': doctor_objs})
     except Exception as e:
         print(e)
         messages.error(request, 'Blog Not Updated')
         return redirect('/staff/blogs/')        
+
+#******************************************** End of Blogs Section ********************************************        

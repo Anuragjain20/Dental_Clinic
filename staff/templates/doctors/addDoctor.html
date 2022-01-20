@@ -98,7 +98,17 @@
                             </div>
                         </div>
 
-
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Role</label>
+                                <select class="select" name='role'>
+                                    {% for value,text in choices.role %}
+                                    <option value="{{value}}">{{text}}</option>
+                                  {% endfor %}
+                                   
+                                </select>
+                            </div>
+                        </div>
 
                         <div class="col-sm-6">
                             <div class="form-group">

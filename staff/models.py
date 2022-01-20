@@ -16,7 +16,7 @@ from django.utils.text import slugify
 choices = {
     'status': (('inactive','Inactive'),('active','Active'),('suspended','Suspended')),
     'gender': (('M',"Male"),('F',"Female"),("O","Other")),
-    "role": (('admin','Admin'),('employee','Employee')),
+    "role": (('admin','Admin'),('employee','Employee'),('doctor','Doctor')),
 
 }
 
@@ -38,6 +38,8 @@ class Profile(AbstractUser):
     image = models.ImageField(upload_to = "media/profile", default = "media/profile/default.png")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    role = models.CharField(max_length=50,choices=choices['role'],default='employee')    
     
 
 
@@ -55,7 +57,6 @@ class Profile(AbstractUser):
 class Employee(Profile):
   
 
-    role = models.CharField(max_length=50,choices=choices['role'],default='employee')
     slug = models.SlugField(max_length=250, unique=True)
 
     

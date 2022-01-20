@@ -1,6 +1,4 @@
 from django.shortcuts import render
-from django.core.mail import send_mail
-from .models import *
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework.views import APIView
@@ -10,14 +8,23 @@ from rest_framework.generics import ListAPIView
 from .utils import *
 from datetime import datetime
 import uuid
+from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.conf import settings
 from staff.models import *
+from .models import *
 # Create your views here.
+
+
+
+#****************************************** Home Page  ***********************************************
 def home(request):
     return render(request,'home.html',{})
 
+#****************************************** End Home Page  ***********************************************
 
+
+#****************************************** Contact Page  ***********************************************
 def contact(request):
     if request.method  == "POST":
         message_name  = request.POST['message-name']
@@ -38,7 +45,21 @@ def contact(request):
     else:
         return render(request,'contact.html',{})    
 
+#****************************************** End Contact Page  ***********************************************
 
+
+#****************************************** Service Page  ***********************************************
+def service_page(request):
+    return render(request,'service.html',{})        
+
+#****************************************** End Service Page  ***********************************************
+
+
+#****************************************** Blogs Section  ***********************************************
+
+
+
+#-------------------- Blog Details ----------------------------
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Blog,
                              slug=post, status='published',
@@ -70,7 +91,7 @@ def post_detail(request, year, month, day, post):
 
 
 
-
+#------------------- All Blogs -------------------------------
 def all_post(request):
     object_list = Blog.published.all()
 
@@ -95,14 +116,20 @@ def all_post(request):
                   {'posts': posts,'page':page})
 
 
+#****************************************** End Blogs Section  ***********************************************
+
+
+          
+
+#****************************************** Booking Sections Functionalities ***********************************************
+
+
+#---------------------- Booking Appointment Page -------------------
 def bookingview(request):
     return render(request,'booking.html',{})
 
 
-def service_page(request):
-    return render(request,'service.html',{})                  
-
-
+#-------------------------------- View Slots  Api -------------------------------------
 class SlotsView(APIView):
     def get(self, request):
         try:
@@ -139,12 +166,12 @@ class SlotsView(APIView):
             print(e)
             return Response({"Error": "error something went wrong", "status": "500"})
 
-
+#------------------------------ Doctors List Api -------------------------------------
 class Doctor_list(ListAPIView):
     serializer_class = DoctorSerializer
     queryset = DoctorModel.objects.all()
 
-
+#------------------------ Book Appointment Api -------------------------------------
 class Book_Appointment(APIView):
     def post(self, request):
         try:
@@ -207,8 +234,12 @@ class Book_Appointment(APIView):
            # return Response({"Error": "error something went wrong", "status": "500"})
 
 
+#****************************************** End Booking Sections Functionalities ***********************************************
 
 
+
+
+#---------------Extras-----------------
 def show_pdf_demo(request):
     data = {
         'name': 'Anurag Jain',
