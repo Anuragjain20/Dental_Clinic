@@ -1,9 +1,9 @@
-from distutils.command.upload import upload
-import email
-from email.mime import image
-from operator import mod
-from random import choice
-from venv import create
+# from distutils.command.upload import upload
+# import email
+# from email.mime import image
+# from operator import mod
+# from random import choice
+# from venv import create
 from django.db import models
 
 
@@ -35,7 +35,7 @@ class Profile(AbstractUser):
     phone = models.CharField(max_length=20)
     gender  = models.CharField(max_length=20,choices=choices['gender'])
     address = models.CharField(max_length=200)
-    image = models.ImageField(upload_to = "media/profile", default = "media/profile/default.png")
+    image = models.ImageField(upload_to = "profile", default = "profile/default.png")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -54,6 +54,8 @@ class Profile(AbstractUser):
         return self.first_name + " " + self.last_name + " " + self.empid
 
 
+
+
 class Employee(Profile):
   
 
@@ -65,8 +67,10 @@ class Employee(Profile):
     #save the emplyee
     def save(self, *args, **kwargs):
         if not self.empid:
-            self.empid = "EMP-" + str(uuid.uuid4())[:6]
-        self.slug =   slugify(self.first_name + " " + self.last_name + " " + self.empid[-6:]) 
+            self.empid = "EMP-" + str(uuid.uuid4())[:3].capitalize()
+        self.slug =   slugify(self.first_name + " " + self.last_name + " " + self.empid[-2:]) 
+
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -94,9 +98,16 @@ class DoctorModel(Profile):
     #save the emplyee
     def save(self, *args, **kwargs):
         if not self.empid:
-            self.empid = "EMP-" + str(uuid.uuid4())[:6]
-        self.slug =   slugify(self.first_name + " " + self.last_name + " " + self.empid[-6:]) 
+            self.empid = "DOC-" + str(uuid.uuid4())[:3]
+        self.slug =   slugify(self.first_name + " " + self.last_name + " " + self.empid[-2:]) 
+        # self.set_password(self.password)
+  
+
         super().save(*args, **kwargs)
+
+    def update_password(self,password,*args,**kwargs):
+        self.set_password(password)
+        super().save(*args,**kwargs)    
 
     def __str__(self):
         return super().__str__()

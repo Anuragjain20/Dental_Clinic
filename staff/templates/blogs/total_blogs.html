@@ -26,11 +26,11 @@
             </div>
         </div>
         <div class="row">
-            {% for blog in blogs %}
+            {% for blog in page_obj %}
             <div class="col-sm-6 col-md-6 col-lg-4 ">
                 <div class="blog grid-blog">
                     <div class="blog-image">
-                        <img class="img-fluid" src="/static/{{blog.image}}" alt="">
+                        <img class="img-fluid" src="/media/{{blog.image}}" alt="">
                     </div>
                     <div class="blog-content">
                         <h3 class="blog-title">{{blog.title}}</h3>
@@ -49,6 +49,11 @@
             </div>
             {% endfor %}
 
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {% include "pagination.html" %}
+            </div>
         </div>
     </div>
 

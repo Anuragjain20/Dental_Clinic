@@ -13,13 +13,17 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from staff.models import *
 from .models import *
+from staff.utils import *
 # Create your views here.
 
 
 
 #****************************************** Home Page  ***********************************************
 def home(request):
-    return render(request,'home.html',{})
+    doctor_list = DoctorModel.objects.filter(status='active')
+    pricing = Pricing.objects.all().order_by('created_at')[:5]
+
+    return render(request,'home.html',{'doctor_list':doctor_list,'pricing':pricing})
 
 #****************************************** End Home Page  ***********************************************
 
@@ -47,12 +51,13 @@ def contact(request):
 
 #****************************************** End Contact Page  ***********************************************
 
+#****************************************** Pricing Page  ***********************************************
+def pricing(request):
+    pricing = Pricing.objects.all().order_by('created_at')
+    return render(request,'pricing.html',{'pricing':pricing})
+#****************************************** End Pricing Page  ***********************************************    
 
-#****************************************** Service Page  ***********************************************
-def service_page(request):
-    return render(request,'service.html',{})        
 
-#****************************************** End Service Page  ***********************************************
 
 
 #****************************************** Blogs Section  ***********************************************
@@ -93,27 +98,21 @@ def post_detail(request, year, month, day, post):
 
 #------------------- All Blogs -------------------------------
 def all_post(request):
-    object_list = Blog.published.all()
-
-
-    
-    paginator = Paginator(object_list, 3) # 3 posts in each page
-    page = request.GET.get('page')
     try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer deliver the first page
-        posts = paginator.page(1)
-    except EmptyPage:
-    # If page is out of range deliver last page of results
-        posts = paginator.page(paginator.num_pages)
-
-    print(posts)
+        object_list = Blog.published.all()
 
 
-    return render(request,
-                  'all_blogs.html',
-                  {'posts': posts,'page':page})
+        posts = paginatorutils(request,object_list,3)
+
+        # print(posts)
+        page = request.GET.get('page', 1)
+
+        return render(request,
+                    'all_blogs.html',
+                    {'posts': posts,'page':page})
+
+    except Exception as e:
+        print(e)
 
 
 #****************************************** End Blogs Section  ***********************************************

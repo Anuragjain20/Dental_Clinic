@@ -27,4 +27,12 @@ urlpatterns = [
     path("blogs/<id>",views.view_blog_part,name='view_part_Blog'),
     path("blogs/delete/<id>",views.deleteBlog,name='delete_blog'),
     path("blogs/edit/<id>",views.editBlog,name='edit_blog'),
+    path('login/',views.login_page,name='login'),
+    path('logout/',views.logout_user,name='logout'),
+    path('emp_profile/',views.emp_profile,name='emp_profile'),
+    path('pricing/',views.pricingView,name='pricingview'),
+    path('addpricing/',views.addPrice,name='addPricing'),
+    path('pricing/delete/<id>',views.delete_price,name='delete_pricing'),
+    path('pricing/edit/<id>',views.editPrice,name='edit_pricing'),
+
 ]

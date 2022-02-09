@@ -69,7 +69,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for apti in appointment %}
+                            {% for apti in page_obj %}
                             <tr>
                                 <td>
                                     <h2>{{apti.name}}</h2>
@@ -99,6 +99,12 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="col-12">
+                {% include "pagination.html" %}
+            </div>
+        </div>
+
     </div>
 
 </div>

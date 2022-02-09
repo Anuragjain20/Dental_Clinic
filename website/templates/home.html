@@ -244,61 +244,18 @@
                         <thead>
                             <tr>
                                 <th scope="col">Service Names</th>
-                                <th scope="col">Stage</th>
+
                                 <th scope="col">Price</th>
                             </tr>
                         </thead>
                         <tbody>
+                            {% for pric_obj in pricing %}
                             <tr>
-                                <th scope="row">Teeth Whitening Service at home</th>
-                                <td>1 times</td>
-                                <td>$115.00</td>
+                                <th scope="row">{{pric_obj.title}}</th>
+
+                                <td>₹ {{pric_obj.price}}</td>
                             </tr>
-                            <tr>
-                                <th scope="row">Teeth Whitening Service at Dental Clinic</th>
-                                <td>1 times</td>
-                                <td>$100.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Ceramic crowns and fillings Dental porcelain</th>
-                                <td>1 times</td>
-                                <td>$99.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Remove crowns, bridges Service</th>
-                                <td>1 tooth</td>
-                                <td>$50.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Covering the recession of the gums</th>
-                                <td>1 times</td>
-                                <td>$400.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Consultation, impressions and preparation of models</th>
-                                <td>1 times</td>
-                                <td>$35.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Removal of an old inlay, old crown</th>
-                                <td>1 times</td>
-                                <td>$99.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Overlay teeth whitening ( 2 arches)</th>
-                                <td>1 times</td>
-                                <td>$170.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Standard porcelain and zirconium crown on implant</th>
-                                <td>1 tooth</td>
-                                <td>$499.00</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">Implantation of an implant (price depends on system used)</th>
-                                <td>1 tooth</td>
-                                <td>$600.00</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -306,7 +263,7 @@
 
             <div class="col-12">
                 <div class="more-btn text-center mt-50">
-                    <a href="#" class="btn dento-btn">Read More <i class="fa fa-angle-double-right"></i></a>
+                    <a href="/pricing/" class="btn dento-btn">Read More <i class="fa fa-angle-double-right"></i></a>
                 </div>
             </div>
         </div>
@@ -329,68 +286,30 @@
         </div>
 
         <div class="row">
+            {% for doctor in doctor_list %}
             <!-- Single Dentist Area -->
-            <div class="col-12 col-sm-6 col-md-4">
+            <div class="col-12 col-sm-6 col-md-4 mx-auto">
                 <div class="single-dentist-area mb-100">
-                    <img src="{% static 'website/img/bg-img/9.png' %}" alt="">
+                    <img src="/media/{{doctor.image}}" alt="doctor">
                     <!-- Dentist Content -->
                     <div class="dentist-content">
                         <!-- Social Info -->
                         <div class="dentist-social-info">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-google-plus"></i></a>
-                        </div>
-                        <!-- Dentist Info -->
-                        <div class="dentist-info bg-gradient-overlay">
-                            <h5>Michael Barley</h5>
-                            <p>Implant Expert</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            <a href="{{doctor.fb_link}}"><i class="fa fa-facebook"></i></a>
+                            <a href="{{doctor.tw_link}}"><i class="fa fa-twitter"></i></a>
 
-            <!-- Single Dentist Area -->
-            <div class="col-12 col-sm-6 col-md-4">
-                <div class="single-dentist-area mb-100">
-                    <img src="{% static 'website/img/bg-img/10.png' %}" alt="">
-                    <!-- Dentist Content -->
-                    <div class="dentist-content">
-                        <!-- Social Info -->
-                        <div class="dentist-social-info">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-google-plus"></i></a>
                         </div>
                         <!-- Dentist Info -->
                         <div class="dentist-info bg-gradient-overlay">
-                            <h5>Michael Barley</h5>
-                            <p>Implant Expert</p>
+                            <h5>{{doctor.first_name}} {{doctor.last_name}}</h5>
+                            <p>{{doctor.designation}}</p>
                         </div>
                     </div>
                 </div>
             </div>
+            {% endfor %}
 
-            <!-- Single Dentist Area -->
-            <div class="col-12 col-sm-6 col-md-4">
-                <div class="single-dentist-area mb-100">
-                    <img src="{% static 'website/img/bg-img/11.png' %}" alt="">
-                    <!-- Dentist Content -->
-                    <div class="dentist-content">
-                        <!-- Social Info -->
-                        <div class="dentist-social-info">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-google-plus"></i></a>
-                        </div>
-                        <!-- Dentist Info -->
-                        <div class="dentist-info bg-gradient-overlay">
-                            <h5>Michael Barley</h5>
-                            <p>Implant Expert</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 </section>

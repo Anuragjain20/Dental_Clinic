@@ -4,15 +4,13 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from datetime import date, datetime,timedelta
 from staff.models import DoctorModel
-
+from django.db.models import Q
 from django.utils.text import slugify
 
 
 class PublishedManager(models.Manager):
     def get_queryset(self):
         return super(PublishedManager,self).get_queryset().filter(status='published')
-
-# Create your models here.
 
 class Blog(models.Model):
     
@@ -21,7 +19,7 @@ class Blog(models.Model):
         ('published', 'Published'),
         )
     title = models.CharField(max_length=250)
-    image = models.ImageField(upload_to = 'media/image', blank=True)
+    image = models.ImageField(upload_to = 'image', blank=True)
     slug = models.SlugField(max_length=250,  unique_for_date='publish')
     author = models.ForeignKey(DoctorModel, on_delete=models.CASCADE, related_name='blog_posts')
     body = models.TextField()
@@ -127,8 +125,6 @@ class BookAppointment(models.Model):
 
 
 
-
-
 class DoctorSchedule(models.Model):
     doctor = models.ForeignKey(DoctorModel, on_delete=models.CASCADE, related_name='schedules')
     start_date = models.DateField()
@@ -139,14 +135,14 @@ class DoctorSchedule(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_slot_generated = models.BooleanField(default=False)
 
-
     
     #override the save method
     def save(self, *args, **kwargs):
         if self.start_date > self.end_date:
             raise ValueError('Start Date cannot be greater than End Date')
-        elif self.start_time > self.end_time:
+        if self.start_time > self.end_time:
             raise ValueError('Start Time cannot be greater than End Time')
+
         else:
             # s1= self.start_time.strftime("%H:%M")
             # e1= self.end_time.strftime("%H:%M")
@@ -205,4 +201,20 @@ class DoctorSchedule(models.Model):
                 start_time = (datetime.strptime(st, "%H:%M") + timedelta(hours=1,minutes=30)).time()
             date += timedelta(days=1)
         return True
+
+
+class Pricing(models.Model):
+
+    title = models.CharField(max_length=100)
+    price = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('created_at',)
+
+
+    def __str__(self):
+        return f'{self.title}'
+
 

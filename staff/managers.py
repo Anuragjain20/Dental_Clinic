@@ -13,7 +13,9 @@ class Profilemanager(BaseUserManager):
             raise ValueError('The Email must be set')
         email = self.normalize_email(email)
         user = self.model(empid =empid,email=email, **extra_fields)
+        print(password)
         user.set_password(password)
+        print(user.password)
         user.save()
         return user
 

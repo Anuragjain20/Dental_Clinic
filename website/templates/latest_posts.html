@@ -16,10 +16,10 @@
 
             {% for blog in latest_posts %}
             <!-- Single Blog Item -->
-            <div class="col-12 col-md-6 col-lg-4">
+            <div class="col-12 col-md-6 col-lg-4 mx-auto">
                 <div class="single-blog-item mb-100" style="min-height: 680px;">
                     <a href="{{blog.get_absolute_url}}">
-                        <img src="/static/{{blog.image}}" alt="">
+                        <img src="/media/{{blog.image}}" alt="">
                     </a>
 
                     <!-- Blog Content -->

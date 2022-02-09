@@ -1,15 +1,26 @@
 
+from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth.decorators import login_required
 from website.models import *
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .models import *
 import markdown
+from  .utils import *
+
 
 #----------------------------- DashBoard --------------------------------------------------------------
 
+@login_required(login_url='/staff/login/')
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    appointments  = BookAppointment.objects.filter(date__gte =datetime.now()).order_by('-created')
+    doctors = DoctorModel.objects.all()
+    doct_count = doctors.count()
+    blog_count = Blog.published.all().count()
+    app_count = BookAppointment.objects.count()
 
+    return render(request, 'dashboard.html',{'appointments':appointments,'doctors':doctors,'doct_count':doct_count,'blog_count':blog_count,'app_count':app_count})
+   
 
 
 
@@ -18,16 +29,33 @@ def dashboard(request):
 #******************************************** Employee Section *****************************************************
  
 #------------------------------ List of Employee ---------------------
+@login_required(login_url='/staff/login/')
 def employeeView(request):
-    employees = Employee.objects.all().order_by('-created_at')
+    try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+     
 
-    return render(request, 'employee/employeelist.html', {'employees': employees})
+        object_list = Employee.objects.all().order_by('-created_at')
+        employees = paginatorutils(request,object_list,3)  
+        page = request.GET.get('page', 1)
+      
 
+        return render(request, 'employee/employeelist.html', {'page_obj': employees,'page':page})
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Something went wrong')
+        return redirect('/staff/dashboard/')
 
 #------------------------------ Add Employee -------------------------
+@login_required(login_url='/staff/login/')
 def addEmployee(request):
 
     try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
         if request.method == 'POST':
             form = {
                 'first_name': request.POST['first_name'],
@@ -39,14 +67,14 @@ def addEmployee(request):
                 'address': request.POST['address'],
                 'role': request.POST['role'],
 
-                'password': request.POST['password']
+                # 'password': request.POST['password']
 
             }
             if request.FILES:
                 form['image'] = request.FILES['profilepic']
 
             emp_obj = Employee(**form)
-            emp_obj.set_password(form['password'])
+            emp_obj.set_password(request.POST['password'])
             emp_obj.save()
             return redirect('/staff/employee/')
 
@@ -57,9 +85,13 @@ def addEmployee(request):
     return render(request, 'employee/addemployee.html', {'choices': choices})
 
 #------------------------------ Delete Employe -----------------------
+@login_required(login_url='/staff/login/')
 def delete_employee(request, slug):
 
     try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
         print(slug)
         emp = Employee.objects.get(slug=slug)
         emp.delete()
@@ -71,9 +103,13 @@ def delete_employee(request, slug):
         return redirect('/staff/employee/')
 
 #------------------------------ Edit Employe --------------------------
+@login_required(login_url='/staff/login/')
 def editEmployee(request, slug):
 
     try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
         emp = Employee.objects.get(slug=slug)
         if request.method == 'POST':
             form = {
@@ -85,8 +121,9 @@ def editEmployee(request, slug):
                 'gender': request.POST['gender'],
                 'address': request.POST['address'],
                 'role': request.POST['role'],
+          
 
-                'password': request.POST['password']
+               
 
             }
             if request.FILES:
@@ -94,7 +131,17 @@ def editEmployee(request, slug):
 
             for key, value in form.items():
                 setattr(emp, key, value)
-            emp.save()
+
+            
+            if request.POST['password'] != emp.password:
+                emp.set_password(request.POST['password'])
+            emp.save()    
+            if emp.empid == request.user.empid:
+                
+                login(request, emp)
+                messages.success(request, 'Updated Successfully')
+                return redirect('/staff/emp_profile/')
+
             messages.success(request, 'Employee Updated Successfully')
             return redirect('/staff/employee/')
         else:
@@ -113,16 +160,26 @@ def editEmployee(request, slug):
 #******************************************** Doctor Section *****************************************************
 
 #-------------------------------------- List of Doctor ----------------------
+@login_required(login_url='/staff/login/')
 def doctorView(request):
-    doctor = DoctorModel.objects.all().order_by('-created_at')
+    if not check_for_admin(request.user):
+        messages.error(request, 'You are not authorized to do so')
+        return redirect('/staff/dashboard/')
 
-    return render(request, 'doctors/doctorlist.html', {'doctorview': doctor})
+    object_list = DoctorModel.objects.all().order_by('-created_at')
+      
+    doctor = paginatorutils(request,object_list,5)  
+    return render(request, 'doctors/doctorlist.html', {'page_obj': doctor})
 
 
 #-------------------------------------- Add Doctor ---------------------------
+@login_required(login_url='/staff/login/')
 def addDoctor(request):
 
     try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
         if request.method == 'POST':
             form = {
                 'first_name': request.POST['first_name'],
@@ -134,7 +191,7 @@ def addDoctor(request):
                 'address': request.POST['address'],
                 'designation': request.POST['designation'],
                 'experience':request.POST['experience'],
-                'password': request.POST['password'],
+                # 'password': request.POST['password'],
                 'fb_link': request.POST['fb_link'],
                 'tw_link': request.POST['tw_link'],
                 'role': request.POST['role'],
@@ -145,7 +202,8 @@ def addDoctor(request):
                 form['image'] = request.FILES['profilepic']
 
             doc_obj = DoctorModel(**form)
-            doc_obj.set_password(form['password'])
+            doc_obj.set_password(request.POST['password'])
+     
             doc_obj.save()
             return redirect('/staff/doctors/')
         else:
@@ -160,10 +218,18 @@ def addDoctor(request):
 
 
 #-------------------------------------- Edit Doctor ---------------------------
+@login_required(login_url='/staff/login/')
 def editDoctor(request, slug):
 
     try:
+        if not check_for_admin(request.user) and not check_for_doctor(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
         doc = DoctorModel.objects.get(slug=slug)
+        if check_for_doctor(request.user) and doc.empid != request.user.empid:
+            messages.error(request, 'You are not authorized to edit this doctor')
+            return redirect('/staff/dashboard/')
+
         if request.method == 'POST':
             form = {
                 'first_name': request.POST['first_name'],
@@ -175,7 +241,7 @@ def editDoctor(request, slug):
                 'address': request.POST['address'],
                 'designation': request.POST['designation'],
                 'experience':request.POST['experience'],
-                'password': request.POST['password'],
+               
                 'fb_link': request.POST['fb_link'],
                 'tw_link': request.POST['tw_link'],
                    'role': request.POST['role'],
@@ -187,8 +253,15 @@ def editDoctor(request, slug):
 
             for key, value in form.items():
                 setattr(doc, key, value)
-            doc.save()
-            messages.success(request, 'Employee Updated Successfully')
+            if request.POST['password'] != doc.password:
+                doc.set_password(request.POST['password'])
+            doc.save()  
+            if doc.empid == request.user.empid:
+                
+                login(request, doc)
+                messages.success(request, 'Updated Successfully')
+                return redirect('/staff/emp_profile/')
+            messages.success(request, 'Updated Successfully')
             return redirect('/staff/doctors/')
         else:
             return render(request, 'doctors/editDoctor.html', {'emp': doc, 'choices': choices})
@@ -198,9 +271,13 @@ def editDoctor(request, slug):
         return redirect('/staff/doctors/')             
 
 #-------------------------------------- Delete Doctor --------------------------
+@login_required(login_url='/staff/login/')
 def delete_doctor(request, slug):
 
     try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
         print(slug)
         doc = DoctorModel.objects.get(slug=slug)
         doc.delete()
@@ -222,16 +299,32 @@ def delete_doctor(request, slug):
 #******************************************** Doctor Schedule Section ********************************************
 
 #-------------------------------------- List of Doctor Schedule -------------------
+@login_required(login_url='/staff/login/')
 def doctorScheduleView(request):
-    doctorsched = DoctorSchedule.objects.all().order_by('-created_at')
+    if not check_for_admin(request.user) and not check_for_doctor(request.user):
+        
+        messages.error(request, 'You are not authorized to do so')
+        return redirect('/staff/dashboard/')
+    if check_for_doctor(request.user):
+        doctor = DoctorModel.objects.get(empid=request.user.empid)
+        doctorsched = DoctorSchedule.objects.filter(doctor=doctor)
+    else:
+        doctorsched = DoctorSchedule.objects.all().order_by('-created_at')
 
-    return render(request, 'doctorSchedule/doctorSchedule.html', {'docshed': doctorsched})
+    doctorsched =  paginatorutils(request,doctorsched,5)  
+    return render(request, 'doctorSchedule/doctorSchedule.html', {'page_obj': doctorsched})
 
 
 #-------------------------------------- Add Doctor Schedule ------------------------
+@login_required(login_url='/staff/login/')
 def addDoctorSchedule(request):
     
     try:
+        if not check_for_admin(request.user) and not check_for_doctor(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+
+
         if request.method == 'POST':
             doctor_obj = DoctorModel.objects.get(empid=request.POST['doctor'])
             form = {
@@ -244,14 +337,19 @@ def addDoctorSchedule(request):
 
 
             }
-            
+            if DoctorSchedule.objects.filter(doctor=form['doctor']).filter(Q(start_date__lte=form['start_date']) & Q(end_date__gte=form['start_date'])  ).exists():     
+                raise ValueError('Doctor already has a schedule for this date') 
+                
 
             doc_obj = DoctorSchedule(**form)
             doc_obj.save()
             messages.success(request, 'Schedule Added Successfully')
             return redirect('/staff/doctorSchedule/')
         else:
-            doctor_objs = DoctorModel.objects.filter(status='active')
+            if check_for_doctor(request.user):
+                doctor_objs = DoctorModel.objects.filter(empid=request.user.empid)
+            else: 
+                doctor_objs = DoctorModel.objects.filter(status='active')
 
             return render(request, 'doctorSchedule/addDoctorschedule.html', {'doc_choices': doctor_objs, 'choices': choices})    
 
@@ -259,14 +357,24 @@ def addDoctorSchedule(request):
         
         print("---------------")
         print(e)
+        messages.error(request, e)
     
     messages.error(request, 'Schedule Not Added')
     return redirect('/staff/doctorSchedule/')
 
 #-------------------------------------- Generate Slots -----------------------------
+@login_required(login_url='/staff/login/')
 def gen_slots(request,id):
     try:
-        docshd = DoctorSchedule.objects.get(id=id)
+        if not check_for_admin(request.user) and not check_for_doctor(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+        docshd = DoctorSchedule.objects.get(id=id)    
+        
+        if  check_for_doctor(request.user) and request.user.empid != docshd.doctor.empid:
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/doctorSchedule/')
+      
         val = docshd.create_slots()
         if val:
             messages.success(request, 'Slots Created Successfully')
@@ -287,13 +395,28 @@ def gen_slots(request,id):
 #******************************************** Appointment Section ********************************************
 
 #-------------------------------------- List of Appointment -----------------------------
+@login_required(login_url='/staff/login/')
 def viewAppointment(request):
-    appointment = BookAppointment.objects.all().order_by('-created')
-    return render(request, 'appointment/viewAppointment.html', {'appointment': appointment})
+    if not check_for_admin(request.user) and not check_for_doctor(request.user):
+        messages.error(request, 'You are not authorized to do so')
+      
+    
+        return redirect('/staff/dashboard/')
+    if check_for_doctor(request.user):
+        doctor = DoctorModel.objects.get(empid=request.user.empid)
+        appointment = BookAppointment.objects.filter(doctor=doctor) 
+    else:       
+        appointment = BookAppointment.objects.all().order_by('-created')
+    appointment =  paginatorutils(request,appointment,10)          
+    return render(request, 'appointment/viewAppointment.html', {'page_obj': appointment})
 
 
 #-------------------------------------- Specific Appointment Details----------------------
+@login_required(login_url='/staff/login/')
 def viewParticularAppointment(request,id):
+    if not check_for_admin(request.user) and not check_for_doctor(request.user):
+        messages.error(request, 'You are not authorized to do so')
+        return redirect('/staff/dashboard/')    
     appointment = BookAppointment.objects.get(conformation_id=id)
     return render(request, 'appointment/viewParticularAppointment.html', {'appointment': appointment})
 
@@ -307,16 +430,28 @@ def viewParticularAppointment(request,id):
 #********************************************  Blogs Section ********************************************
 
 #-------------------------------------- List of Blogs -------------------------------
-
+@login_required(login_url='/staff/login/')
 def viewAllBlogs(request):
-    blogs = Blog.objects.all().order_by('-created')
-    return render(request, 'blogs/total_blogs.html', {'blogs': blogs})
+    if not check_for_admin(request.user) and not check_for_doctor(request.user):
+        messages.error(request, 'You are not authorized to do so')
+        return redirect('/staff/dashboard/')
+    if check_for_doctor(request.user):
+        doctor = DoctorModel.objects.get(empid=request.user.empid)
+        blogs = Blog.objects.filter(author=doctor)
+    else:
+        blogs = Blog.objects.all().order_by('-created')
+    blogs =  paginatorutils(request,blogs,5)
+    return render(request, 'blogs/total_blogs.html', {'page_obj': blogs})
 
 
 #-------------------------------------- Add Blog -------------------------------------
-
+@login_required(login_url='/staff/login/')
 def addBlog(request):
     try:
+        if not check_for_admin(request.user) and not check_for_doctor(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+
 
         if request.method == 'POST':
             author = DoctorModel.objects.get(empid=request.POST['author'])
@@ -341,9 +476,13 @@ def addBlog(request):
             messages.success(request, 'Blog Added Successfully')
             return redirect('/staff/blogs/')
         else:
+            if check_for_doctor(request.user):
+                doctor_objs = DoctorModel.objects.filter(empid=request.user.empid)
+            else:
+                doctor_objs = DoctorModel.objects.filter(status='active')
+
         
             statuschoice=(('draft', 'Draft'),('published', 'Published'))
-            doctor_objs = DoctorModel.objects.filter(status='active')
 
             return render(request, 'blogs/addBlog.html', {'choices': statuschoice, 'doc_choices': doctor_objs})
     except Exception as e:
@@ -352,16 +491,28 @@ def addBlog(request):
         return redirect('/staff/blogs/')
 
 #-------------------------------------- View Specific Blog ----------------------------
-
+@login_required(login_url='/staff/login/')
 def view_blog_part(request,id):
+    if not check_for_admin(request.user) and not check_for_doctor(request.user):
+        messages.error(request, 'You are not authorized to do so')
+        return redirect('/staff/dashboard/')
+
     blog = Blog.objects.get(id=id)
     return render(request, 'blogs/view_blog_part.html', {'blog': blog})
 
 #-------------------------------------- Delete Blog ------------------------------------
-
+@login_required(login_url='/staff/login/')
 def deleteBlog(request,id):
     try:
+        if not check_for_admin(request.user) and not check_for_doctor(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+            
         blog = Blog.objects.get(id=id)
+        if check_for_doctor(request.user) and request.user.empid != blog.author.empid:
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/blogs/')
+   
         blog.delete()
         messages.success(request, 'Blog Deleted Successfully')
         return redirect('/staff/blogs/')
@@ -371,10 +522,18 @@ def deleteBlog(request,id):
         return redirect('/staff/blogs/')
 
 #-------------------------------------- Edit Blog ----------------------------------------
-
+@login_required(login_url='/staff/login/')
 def editBlog(request,id):
     try:
+        if not check_for_admin(request.user) and not check_for_doctor(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+            
         blog = Blog.objects.get(id=id)
+        if check_for_doctor(request.user) and request.user.empid != blog.author.empid:
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/blogs/')
+     
         if request.method == 'POST':
           
             # md = markdown.Markdown(extensions=['extra'])
@@ -392,8 +551,13 @@ def editBlog(request,id):
             messages.success(request, 'Blog Updated Successfully')
             return redirect('/staff/blogs/'+str(id))
         else:
+            if check_for_doctor(request.user):
+                doctor_objs = DoctorModel.objects.filter(empid=request.user.empid)
+            else:
+                doctor_objs = DoctorModel.objects.filter(status='active')
+
             statuschoice=(('draft', 'Draft'),('published', 'Published'))
-            doctor_objs = DoctorModel.objects.filter(status='active')            
+               
             return render(request, 'blogs/editBlog.html', {'blog': blog, 'choices': statuschoice, 'doc_choices': doctor_objs})
     except Exception as e:
         print(e)
@@ -401,3 +565,166 @@ def editBlog(request,id):
         return redirect('/staff/blogs/')        
 
 #******************************************** End of Blogs Section ********************************************        
+
+
+
+
+
+
+#********************************************  Authentication Section ********************************************
+
+
+#-------------------------------------- Login Page -------------------------------------
+def login_page(request):
+    try:
+        if request.method == "POST":
+            empid = request.POST['empid']
+            password = request.POST['password']
+            user = authenticate(request, empid=empid, password=password)
+            print("-----------")
+            print(user)
+            if user is not None:
+                login(request, user)
+                messages.info(request, f"You are now logged in as {empid}")
+                return redirect('/staff/dashboard/')
+            else:
+                messages.error(request, "Invalid credentials")
+                return redirect('/staff/login/')
+        else:
+            return render(request, 'authenticating/login.html')
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Login Failed')
+        return redirect('/staff/login/')
+
+
+#-------------------------------------- Logout -------------------------------------
+@login_required(login_url='/staff/login/')
+def logout_user(request):
+    logout(request)
+    messages.info(request, "Logged out successfully!")
+    return redirect('/staff/login/')
+
+#******************************************** End of Authentication Section ********************************************
+
+#********************************************  Profile Section ********************************************
+
+
+#--------------------------------------Employee Profile Page -------------------------------------
+@login_required(login_url='/staff/login/')
+def emp_profile(request):
+    if  request.user.role == "doctor":
+        doctor_obj = DoctorModel.objects.get(empid=request.user.empid)
+        return render(request, 'profile/doctor_profile.html', {'obj': doctor_obj})
+    obj = Employee.objects.get(empid=request.user.empid)
+    return render(request, 'profile/emp_profile.html', {'obj': obj})
+
+
+#******************************************** End of Profile Section ********************************************    
+
+
+
+
+
+
+
+#******************************************** pricing Section *****************************************************
+ 
+#------------------------------ List of Prices ---------------------
+@login_required(login_url='/staff/login/')
+def pricingView(request):
+    try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+     
+
+        object_list = Pricing.objects.all().order_by('-created_at')
+        price = paginatorutils(request,object_list,3)  
+        page = request.GET.get('page', 1)
+      
+
+        return render(request, 'pricing/pricing.html', {'page_obj': price,'page':page})
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Something went wrong')
+        return redirect('/staff/dashboard/')
+
+#------------------------------ Add Price -------------------------
+@login_required(login_url='/staff/login/')
+def addPrice(request):
+
+    try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+        if request.method == 'POST':
+            form = {
+                'title': request.POST['title'],
+                'price': request.POST['price'],
+
+
+            }
+     
+            obj = Pricing(**form)
+        
+            obj.save()
+            return redirect('/staff/pricing/')
+
+    except Exception as e:
+        print("---------------")
+        print(e)
+
+    return render(request, 'pricing/addpricing.html')
+
+#------------------------------ Delete Price -----------------------
+@login_required(login_url='/staff/login/')
+def delete_price(request, id):
+
+    try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+        price = Pricing.objects.get(id=id)
+        price.delete()
+
+        messages.success(request, 'Service Deleted Successfully')
+        return redirect('/staff/pricing/')
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Service Not Deleted')
+        return redirect('/staff/pricing/')
+
+# #------------------------------ Edit Price --------------------------
+@login_required(login_url='/staff/login/')
+def editPrice(request, id):
+
+    try:
+        if not check_for_admin(request.user):
+            messages.error(request, 'You are not authorized to do so')
+            return redirect('/staff/dashboard/')
+        price = Pricing.objects.get(id=id)
+
+        if request.method == 'POST':
+            form = {
+                'title': request.POST['title'],
+                'price': request.POST['price'],
+
+            }
+      
+            for key, value in form.items():
+                setattr(price, key, value)
+            price.save()
+            messages.success(request, 'Price Updated Successfully')
+            return redirect('/staff/pricing/')
+        else:
+            return render(request, 'pricing/edit_price.html', {'price_obj': price})
+    except Exception as e:
+        print(e)
+        messages.error(request, 'Pricing Not Found')
+        return redirect('/staff/pricing/')             
+
+#******************************************** End of Pricing Section ********************************************
+
+
+

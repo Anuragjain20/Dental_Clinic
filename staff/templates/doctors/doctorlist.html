@@ -1,4 +1,4 @@
-{% extends "basic.html" %} {% block content %}
+{% extends "basic.html" %} {% block content %}{% load static %}
 <div class="page-wrapper">
     <div class="content">
         <div class="row" id="messagetagid">
@@ -67,10 +67,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for employee in doctorview %}
+                            {% for employee in page_obj %}
                             <tr>
                                 <td>
-                                    <img width="28" height="28" src="/static/{{employee.image}}" class="rounded-circle" alt="">
+                                    <img width="28" height="28" src="/media/{{employee.image}}" class="rounded-circle" alt="">
                                     <h2>{{employee.first_name}} {{employee.last_name}}</h2>
                                 </td>
                                 <td>{{employee.empid}}</td>
@@ -95,6 +95,12 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% include "pagination.html" %}
             </div>
         </div>
     </div>
@@ -123,7 +129,7 @@
 
 <script>
     function addvalue(value1, value2, value3) {
-        document.getElementById("modal-img").src = "/static/" + value1;
+        document.getElementById("modal-img").src = "/media/" + value1;
         document.getElementById("modal-valname").innerText = value2;
         document.getElementById("delete_user").href = "/staff/doctors/delete/" + value3;
     }

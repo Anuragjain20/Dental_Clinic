@@ -49,7 +49,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group mb-30">
-                                            <input type="date" v-model="selected_date" class="form-control" @change="getSlots('date')">
+                                            <input type="date" id="book_date" v-model="selected_date" class="form-control" @change="getSlots('date')">
                                             <!--   <select name="your-scheldule" class="form-control">
                           <option value="Choose Your Scheldule">Choose Your Scheldule</option>
                           <option value="9 AM to 10 AM">9 AM to 10 AM</option>
@@ -93,6 +93,15 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
+    var date = new Date();
+    date.setDate(date.getDate() + 10);
+
+
+
+    var dateControl = document.getElementById("book_date");
+    dateControl.min = new Date().toISOString().split("T")[0];
+    var dateControl = document.getElementById("book_date");
+    dateControl.max = date.toISOString().split("T")[0];
     const app = new Vue({
         delimiters: ['[[', ']]'],
         el: '#app',

@@ -67,10 +67,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for employee in employees %}
+                            {% for employee in page_obj %}
                             <tr>
                                 <td>
-                                    <img width="28" height="28" src="/static/{{employee.image}}" class="rounded-circle" alt="">
+                                    <img width="28" height="28" src="/media/{{employee.image}}" class="rounded-circle" alt="">
                                     <h2>{{employee.first_name}} {{employee.last_name}}</h2>
                                 </td>
                                 <td>{{employee.empid}}</td>
@@ -84,6 +84,7 @@
                                     <div class="dropdown dropdown-action">
                                         <a href="#" class="action-icon dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
                                         <div class="dropdown-menu dropdown-menu-right">
+
                                             <a class="dropdown-item" href="/staff/employee/edit/{{employee.slug}}"><i class="fa fa-pencil m-r-5"></i> Edit</a>
                                             <a class="dropdown-item" onclick="addvalue('{{employee.image}}','{{employee.empid}}','{{employee.slug}}')" href="#" data-toggle="modal" data-target="#delete_employee"><i class="fa fa-trash-o m-r-5"></i> Delete</a>
                                         </div>
@@ -95,6 +96,12 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-12">
+                {% include "pagination.html" %}
             </div>
         </div>
     </div>
@@ -123,7 +130,7 @@
 
 <script>
     function addvalue(value1, value2, value3) {
-        document.getElementById("modal-img").src = "/static/" + value1;
+        document.getElementById("modal-img").src = "/media/" + value1;
         document.getElementById("modal-valname").innerText = value2;
         document.getElementById("delete_user").href = "/staff/employee/delete/" + value3;
     }

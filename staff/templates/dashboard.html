@@ -1,1 +1,137 @@
-{% extends "basic.html" %} {% block content %} dash {% endblock %}
+{% extends "basic.html" %} {% block content %}
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="row mx-auto">
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="dash-widget">
+                    <span class="dash-widget-bg1"><i class="fa fa-stethoscope" aria-hidden="true"></i></span>
+                    <div class="dash-widget-info text-right">
+                        <h3>{{doct_count}}</h3>
+                        <span class="widget-title1">Doctors <i class="fa fa-check" aria-hidden="true"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="dash-widget">
+                    <span class="dash-widget-bg2"><i class="fa fa-user-o"></i></span>
+                    <div class="dash-widget-info text-right">
+                        <h3>{{app_count}}</h3>
+                        <span class="widget-title2">Appointment <i class="fa fa-check" aria-hidden="true"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
+                <div class="dash-widget">
+                    <span class="dash-widget-bg3"><i class="fa fa-user-md" aria-hidden="true"></i></span>
+                    <div class="dash-widget-info text-right">
+                        <h3>{{blog_count}}</h3>
+                        <span class="widget-title3">Blogs <i class="fa fa-check" aria-hidden="true"></i></span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row" id="messagetagid">
+            <div class="col-sm-4  mx-auto">
+                {% if messages %}
+                <ul class="messages list-group">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}  list-group-item" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title d-inline-block">Upcoming Appointments</h4> <a href="/staff/viewAppointment/" class="btn btn-primary float-right">View all</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead class="d-none">
+                                    <tr>
+                                        <th>Patient Name</th>
+                                        <th>Doctor Name</th>
+                                        <th>Timing</th>
+                                        <th>Date</th>
+                                        <th class="text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for appointment in appointments %}
+                                    <tr>
+                                        <td style="min-width: 200px;">
+                                            <a class="avatar">{{ appointment.name|make_list|first }}</a>
+                                            <h2>{{ appointment.name}} <span>{{appointment.phone}}</span></h2>
+                                        </td>
+                                        <td>
+                                            <h5 class="time-title p-0">Appointment With</h5>
+                                            <p>{{ appointment.doctor.first_name }} {{appointment.doctor.last_name}}</p>
+                                        </td>
+                                        <td>
+                                            <h5 class="time-title p-0">Timing</h5>
+                                            <p>{{appointment.slot.start_time}} - {{appointment.slot.end_time}}</p>
+                                        </td>
+                                        <td>
+                                            <h5 class="time-title p-0">Date</h5>
+                                            <p>{{appointment.date}}</p>
+                                        </td>
+                                        <td class="text-right">
+                                            <a href="/staff/viewAppointment/{{appointment.conformation_id}}" class="btn btn-outline-primary take-btn">View</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3 ">
+                <div class="card member-panel">
+                    <div class="card-header bg-white">
+                        <h4 class="card-title mb-0">Doctors</h4>
+                    </div>
+                    <div class="card-body">
+                        {% for doctor in doctors %}
+                        <ul class="contact-list">
+                            <li>
+                                <div class="contact-cont">
+                                    <div class="float-left user-img m-r-10">
+                                        <a title="John Doe"><img src="/media/{{doctor.image}}" alt="" class="w-40 rounded-circle"></a>
+                                    </div>
+                                    <div class="contact-info">
+                                        <span class="contact-name text-ellipsis">{{ doctor.first_name }} {{doctor.last_name}}</span>
+                                        <span class="contact-date">{{doctor.designation}}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer text-center bg-white">
+                        <a href="/staff/doctors/" class="text-muted">View all Doctors</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+{% endblock %} {% block scripts %}
+
+<script>
+    window.setTimeout("document.getElementById('messagetagid').style.display='none';", 2000);
+</script>
+{% endblock %}

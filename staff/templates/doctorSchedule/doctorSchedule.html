@@ -39,10 +39,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for shed in docshed %}
+                            {% for shed in page_obj %}
                             <tr>
                                 <td>
-                                    <img width="28" height="28" src="/static/{{shed.doctor.image}}" class="rounded-circle" alt="">
+                                    <img width="28" height="28" src="/media/{{shed.doctor.image}}" class="rounded-circle float-left " alt="">
                                     <h2>{{shed.doctor.first_name}} {{shed.doctor.last_name}}</h2>
                                 </td>
                                 <td>{{shed.doctor.empid}}</td>
@@ -63,6 +63,12 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% include "pagination.html" %}
             </div>
         </div>
     </div>
