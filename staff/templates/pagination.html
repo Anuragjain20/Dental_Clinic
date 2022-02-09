@@ -1,0 +1,34 @@
+<style>
+    .pg-l {
+        opacity: 0.65;
+        cursor: not-allowed;
+        display: none;
+    }
+    
+    .pg-l:hover {
+        opacity: 0.65;
+        cursor: not-allowed;
+        display: none;
+    }
+</style>
+
+{% if page_obj.has_other_pages %}
+<!-- Pagination -->
+<nav class="dento-pagination mb-100">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a></li>
+        {% else %}
+        <li class="page-item"><a class="page-link disabled pg-l" disabled href="#"><i class="fa fa-angle-left"></i></a></li>
+        {% endif %} {% for i in page_obj.paginator.page_range %} {% if page_obj.number == i %}
+        <li class="page-item active"><a class="page-link" href="#">{{i}}</a></li>
+        {% else %}
+        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{i}}</a></li>
+        {% endif %} {% endfor %} {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a></li>
+        {% else %}
+        <li class="page-item"><a class="page-link disabled pg-l" disabled href="#"><i class="fa fa-angle-right"></i></a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

@@ -1,5 +1,4 @@
-{% extends "base.html" %} {% block content %}{% load static %}
-
+{% extends "base.html" %} {% block content %}{% load static %} {% load blog_tags %}
 <!-- ***** Breadcrumb Area Start ***** -->
 <div class="breadcumb-area bg-img bg-gradient-overlay" style="background-image: url({% static 'website/img/bg-img/12.jpg'  %});">
     <div class="container h-100">
@@ -33,14 +32,14 @@
             <div class="col-12 col-lg-10 mb-100 mx-auto">
                 <!-- Blog Details Area -->
                 <div class="blog-details-area mx-auto">
-                    <img src="/static/{{post.image}}" alt="{{post.title}}">
+                    <img src="/media/{{post.image}}" alt="{{post.title}}">
 
                     <h2 class="post-title">{{post.title}}</h2>
                     <div class="post-meta">
                         <a href="#"><i class="icon_clock_alt"></i> {{post.publish}}</a>
                         <a href="#"><i class="icon_pencil-edit"></i> {{post.author}}</a>
                     </div>
-                    <p>{{post.body}}</p>
+                    <p>{{post.body|markdown|safe}}</p>
                 </div>
 
                 <!-- Post Share  -->

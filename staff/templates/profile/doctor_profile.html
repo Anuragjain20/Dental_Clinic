@@ -1,0 +1,83 @@
+{% extends "basic.html" %} {% block content %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="row" id="messagetagid">
+            <div class="col-sm-4  mx-auto">
+                {% if messages %}
+                <ul class="messages list-group">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}  list-group-item" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-7 col-6">
+                <h4 class="page-title">My Profile</h4>
+            </div>
+
+            <div class="col-sm-5 col-6 text-right m-b-30">
+                <a href="/staff/doctors/edit/{{obj.slug}}" class="btn btn-primary btn-rounded"><i class="fa fa-plus"></i> Edit Profile</a>
+            </div>
+        </div>
+        <div class="card-box profile-header">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="profile-view">
+                        <div class="profile-img-wrap">
+                            <div class="profile-img">
+                                <img class="avatar" src="/media/{{obj.image}}" alt="profile">
+                            </div>
+                        </div>
+                        <div class="profile-basic">
+                            <div class="row">
+                                <div class="col-md-5">
+                                    <div class="profile-info-left">
+                                        <h3 class="user-name m-t-0 mb-0">{{obj.first_name}} {{obj.last_name}}</h3>
+                                        <small class="text-muted">{{obj.role}}</small>
+                                        <div class="staff-id">Employee ID : {{obj.empid}}</div>
+
+                                        <div class="staff-id">Designation : {{obj.designation}}</div>
+                                        <div class="staff-id">Experience : {{obj.experience}} yr</div>
+
+
+                                    </div>
+                                </div>
+                                <div class="col-md-7">
+                                    <ul class="personal-info">
+                                        <li>
+                                            <span class="title">Phone:</span>
+                                            <span class="text">{{obj.phone}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title">Email:</span>
+                                            <span class="text">{{obj.email}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title">Status:</span>
+                                            <span class="text">{{obj.status}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title">Address:</span>
+                                            <span class="text">{{obj.address}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="title">Gender:</span>
+                                            <span class="text">{{obj.gender}}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</div>
+{% endblock %}

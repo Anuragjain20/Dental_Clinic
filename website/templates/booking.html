@@ -22,7 +22,7 @@
                         <!-- Appointment Form -->
                         <div class="appointment-form">
                             <form>
-
+                                {% csrf_token %}
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-30">
@@ -43,13 +43,13 @@
                                         <div class="form-group mb-30">
                                             <select class="form-control" v-model="selected_doctor" @change="getSlots('doctor')">
                           <option value="" selected="selected" hidden="hidden" >Choose Your Doctor</option>
-                          <option v-for="doctor in doctors" :value="doctor.id">[[doctor.name]]</option>
+                          <option v-for="doctor in doctors" :value="doctor.empid">[[doctor.first_name]] [[doctor.last_name]]</option>
                         </select>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group mb-30">
-                                            <input type="date" v-model="selected_date" class="form-control" @change="getSlots('date')">
+                                            <input type="date" id="book_date" v-model="selected_date" class="form-control" @change="getSlots('date')">
                                             <!--   <select name="your-scheldule" class="form-control">
                           <option value="Choose Your Scheldule">Choose Your Scheldule</option>
                           <option value="9 AM to 10 AM">9 AM to 10 AM</option>
@@ -93,6 +93,15 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script>
+    var date = new Date();
+    date.setDate(date.getDate() + 10);
+
+
+
+    var dateControl = document.getElementById("book_date");
+    dateControl.min = new Date().toISOString().split("T")[0];
+    var dateControl = document.getElementById("book_date");
+    dateControl.max = date.toISOString().split("T")[0];
     const app = new Vue({
         delimiters: ['[[', ']]'],
         el: '#app',

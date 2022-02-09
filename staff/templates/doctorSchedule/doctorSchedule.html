@@ -1,0 +1,87 @@
+{% extends "basic.html" %} {% block content %}
+<div class="page-wrapper">
+    <div class="content">
+        <div class="row" id="messagetagid">
+            <div class="col-sm-4  mx-auto">
+                {% if messages %}
+                <ul class="messages list-group">
+                    {% for message in messages %}
+                    <li {% if message.tags %} class="{{ message.tags }}  list-group-item" {% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-4 col-3">
+                <h4 class="page-title">Doctors Schedule</h4>
+            </div>
+            <div class="col-sm-8 col-9 text-right m-b-20">
+                <a href="/staff/addDoctorSchedule/" class="btn btn-primary float-right btn-rounded"><i class="fa fa-plus"></i> Add Schedule</a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-striped custom-table text-center">
+                        <thead>
+                            <tr>
+                                <th style="min-width:200px;">Name</th>
+                                <th>Doctor ID</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for shed in page_obj %}
+                            <tr>
+                                <td>
+                                    <img width="28" height="28" src="/media/{{shed.doctor.image}}" class="rounded-circle float-left " alt="">
+                                    <h2>{{shed.doctor.first_name}} {{shed.doctor.last_name}}</h2>
+                                </td>
+                                <td>{{shed.doctor.empid}}</td>
+                                <td>{{shed.start_date}}</td>
+                                <td>{{shed.end_date}}</td>
+                                <td>{{shed.start_time}}</td>
+                                <td>{{shed.end_time}}</td>
+
+
+                                <td class="text-right">
+                                    {% if shed.is_slot_generated %}
+                                    <a type="button" class="btn btn-info btn-sm disabled" href="/staff/doctorSchedule/gen_slot/{{shed.id}}" aria-disabled="true" role="button">Generate Slots</a> {% else %}
+                                    <a type="button" class="btn btn-info btn-sm" href="/staff/doctorSchedule/gen_slot/{{shed.id}}" role="button">Generate Slots</a> {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                {% include "pagination.html" %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+{% endblock %} {% block scripts %}
+
+
+<script>
+    window.setTimeout("document.getElementById('messagetagid').style.display='none';", 2000);
+</script>
+{% endblock %}

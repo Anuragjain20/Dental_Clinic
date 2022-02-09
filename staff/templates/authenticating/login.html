@@ -1,0 +1,56 @@
+{% extends "basic.html" %} {% block content %} {% load static %}
+
+
+
+<div class="main-wrapper account-wrapper">
+    <div class="account-page">
+        <div class="account-center">
+            <!--Messages-->
+            <div class="row" id="messagetagid">
+                <div class="col-sm-4  mx-auto my-4">
+                    {% if messages %}
+                    <ul class="messages list-group mx-5 px-5">
+                        {% for message in messages %}
+                        <li {% if message.tags %} class="{{ message.tags }}  list-group-item" {% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                </div>
+            </div>
+
+
+            <div class="account-box">
+                <form class="form-signin" method="POST">
+                    {% csrf_token %}
+                    <div class="account-logo">
+                        <img src="{% static 'website/img/core-img/logo.png' %}" alt="logo">
+                    </div>
+                    <div class="form-group">
+                        <label> Employee ID</label>
+                        <input type="text" autofocus="" class="form-control" name="empid">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" class="form-control" name="password">
+                    </div>
+                    <div class="form-group text-right">
+                        <a href="#">Forgot your password?</a>
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary account-btn">Login</button>
+                    </div>
+                    <!-- <div class="text-center register-link">
+                        Don’t have an account? <a href="register.html">Register Now</a>
+                    </div> -->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block scripts %}
+
+<script>
+    window.setTimeout("document.getElementById('messagetagid').style.display='none';", 2000);
+</script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% include 'basic.html' %} {% block content %}
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <h4 class="page-title">Add Blog</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Title <span class="text-danger">*</span></label>
+                                <input class="form-control" type="text" name="title" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Author</label>
+                                <select class="select" name="author">
+                                    {% for doc in doc_choices %}
+                                    <option value="{{doc.empid}}">{{doc.first_name}} {{doc.last_name}}</option>
+                                    {% endfor %}
+
+                                   
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-12">
+                            <div class="form-group mx-auto">
+                                <label>Blog Description</label>
+                                <textarea cols="30" rows="30" class="form-control" name="body_blog"></textarea>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="select" name='status'>
+                                    {% for value,text in choices %}
+                                    <option value="{{value}}">{{text}}</option>
+                                  {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <label>Image </label>
+
+                                <input class="form-control" type="file" name='image'>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="m-t-20 text-center">
+                        <button class="btn btn-primary submit-btn">Create Blog</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

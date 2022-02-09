@@ -1,6 +1,4 @@
 from django.shortcuts import render
-from django.core.mail import send_mail
-from .models import *
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from rest_framework.views import APIView
@@ -10,13 +8,27 @@ from rest_framework.generics import ListAPIView
 from .utils import *
 from datetime import datetime
 import uuid
+from django.core.mail import send_mail
 from django.core.mail import EmailMessage
 from django.conf import settings
+from staff.models import *
+from .models import *
+from staff.utils import *
 # Create your views here.
+
+
+
+#****************************************** Home Page  ***********************************************
 def home(request):
-    return render(request,'home.html',{})
+    doctor_list = DoctorModel.objects.filter(status='active')
+    pricing = Pricing.objects.all().order_by('created_at')[:5]
+
+    return render(request,'home.html',{'doctor_list':doctor_list,'pricing':pricing})
+
+#****************************************** End Home Page  ***********************************************
 
 
+#****************************************** Contact Page  ***********************************************
 def contact(request):
     if request.method  == "POST":
         message_name  = request.POST['message-name']
@@ -37,7 +49,22 @@ def contact(request):
     else:
         return render(request,'contact.html',{})    
 
+#****************************************** End Contact Page  ***********************************************
 
+#****************************************** Pricing Page  ***********************************************
+def pricing(request):
+    pricing = Pricing.objects.all().order_by('created_at')
+    return render(request,'pricing.html',{'pricing':pricing})
+#****************************************** End Pricing Page  ***********************************************    
+
+
+
+
+#****************************************** Blogs Section  ***********************************************
+
+
+
+#-------------------- Blog Details ----------------------------
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Blog,
                              slug=post, status='published',
@@ -69,39 +96,39 @@ def post_detail(request, year, month, day, post):
 
 
 
-
+#------------------- All Blogs -------------------------------
 def all_post(request):
-    object_list = Blog.published.all()
-
-
-    
-    paginator = Paginator(object_list, 3) # 3 posts in each page
-    page = request.GET.get('page')
     try:
-        posts = paginator.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer deliver the first page
-        posts = paginator.page(1)
-    except EmptyPage:
-    # If page is out of range deliver last page of results
-        posts = paginator.page(paginator.num_pages)
-
-    print(posts)
+        object_list = Blog.published.all()
 
 
-    return render(request,
-                  'all_blogs.html',
-                  {'posts': posts,'page':page})
+        posts = paginatorutils(request,object_list,3)
+
+        # print(posts)
+        page = request.GET.get('page', 1)
+
+        return render(request,
+                    'all_blogs.html',
+                    {'posts': posts,'page':page})
+
+    except Exception as e:
+        print(e)
 
 
+#****************************************** End Blogs Section  ***********************************************
+
+
+          
+
+#****************************************** Booking Sections Functionalities ***********************************************
+
+
+#---------------------- Booking Appointment Page -------------------
 def bookingview(request):
     return render(request,'booking.html',{})
 
 
-def service_page(request):
-    return render(request,'service.html',{})                  
-
-
+#-------------------------------- View Slots  Api -------------------------------------
 class SlotsView(APIView):
     def get(self, request):
         try:
@@ -115,16 +142,21 @@ class SlotsView(APIView):
                 doctor = request.GET.get('doctor')
                 
                 print(doctor)
-                doctor = Doctor.objects.get(id=doctor)
+                doctor = DoctorModel.objects.get(empid=doctor)
                 date = datetime.strptime(date, '%Y-%m-%d').date()
                 val = check_doctor_is_available(doctor,date)
                 print(val)
             if val == False:
                 return Response({'status':'not available'})
             
-            slot = Slots.objects.filter(date=date,doctor=doctor)    
-            print(slot)
+            slot = Slots.objects.filter(date=date,doctor=doctor)  
+
+            if  not slot:
+                return Response({'status':'not available'})
+            
+     
             serializer = SlotsSerializer( slot, many=True)
+
             
                 
             return Response(serializer.data)       
@@ -133,12 +165,12 @@ class SlotsView(APIView):
             print(e)
             return Response({"Error": "error something went wrong", "status": "500"})
 
-
+#------------------------------ Doctors List Api -------------------------------------
 class Doctor_list(ListAPIView):
     serializer_class = DoctorSerializer
-    queryset = Doctor.objects.all()
+    queryset = DoctorModel.objects.all()
 
-
+#------------------------ Book Appointment Api -------------------------------------
 class Book_Appointment(APIView):
     def post(self, request):
         try:
@@ -147,6 +179,8 @@ class Book_Appointment(APIView):
             obj = Slots.objects.get(id=request.data['slot'])
             if obj.is_available == False:
                 return Response({"Error": "Slot is already booked"})
+            request.data['doctor']= DoctorModel.objects.get(empid=request.data['doctor'])  
+            request.data['conformation_id']= str(uuid.uuid4()) + "--" + str(obj.available_slots)             
             serializers = AppointmentSerializer(data=request.data)
             if serializers.is_valid():
                 
@@ -156,19 +190,24 @@ class Book_Appointment(APIView):
                 obj.save()
                 serializers.save()
                 data = {
-                    'name': request.data['name'],
-                    'conformationid': str(uuid.uuid4()) + "--" + str(obj.available_slots),
-                    'date': request.data['date'],
+                    'name':serializers.data['name'],
+                    'email':serializers.data['email'],
+                    'phone':serializers.data['phone'],
+                    'date':serializers.data['date'],
+                    
+                    'conformationid': serializers.data['conformation_id'],
+                
                     'time_slot': str(obj.start_time) + "-" + str(obj.end_time),
-                    'doctor': obj.doctor.name,
-                    'email': request.data['email'],
-                    'phone': request.data['phone'],
-                    'message': request.data['message'],
+                    'doctor': obj.doctor.first_name+" "+obj.doctor.last_name,
+                   
+                    'message': serializers.data['message'],
                    "STATIC_ROOT": settings.STATIC_URL+"website/img/core-img/logo.png"
                     }
                 file_name,ret = save_pdf(data)
                 file_name = str(settings.BASE_DIR) + f'/pdfs/{file_name}.pdf'
+                print(file_name)
                 #sending email with file
+
                 if not ret:
                     return Response({"Error": "error something went wrong"})
                     
@@ -191,11 +230,15 @@ class Book_Appointment(APIView):
 
         except Exception as e:
             print(e)
-            return Response({"Error": "error something went wrong", "status": "500"})
+           # return Response({"Error": "error something went wrong", "status": "500"})
+
+
+#****************************************** End Booking Sections Functionalities ***********************************************
 
 
 
 
+#---------------Extras-----------------
 def show_pdf_demo(request):
     data = {
         'name': 'Anurag Jain',

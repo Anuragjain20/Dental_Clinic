@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- add-employee24:07-->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Dento - Dentist &amp; Medical HTML Template">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Title -->
+    <title>Dento</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'website/img/core-img/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/font-awesome.min.css'%}">
+    <link rel="stylesheet" href="{% static 'assets/css/select2.min.css'%}">
+    <link rel="stylesheet" href="{% static  'assets/css/bootstrap-datetimepicker.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+    <!---->
+    {% block header %} {% endblock %}
+
+    <!--[if lt IE 9]>
+		<script src="assets/js/html5shiv.min.js"></script>
+		<script src="assets/js/respond.min.js"></script>
+	<![endif]-->
+    {% block style %}{% endblock %}
+</head>
+
+<body>
+    <div class="main-wrapper">
+        {% if request.user.is_authenticated %}
+        <div class="header">
+            <div class="header-left">
+                <a href="/" class="logo">
+                    <img src="{% static 'assets/img/logo.png' %}" width="35" height="35" alt=""> <span>Dento</span>
+                </a>
+            </div>
+
+        </div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-inner slimscroll">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul>
+                        <li class="menu-title">Main</li>
+                        <li>
+                            <a href="/staff/dashboard/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a>
+                        </li>
+                        <li>
+                            <a href="/staff/doctors/"><i class="fa fa-user-md"></i> <span>Doctors</span></a>
+                        </li>
+
+                        <li>
+                            <a href="/staff/viewAppointment/"><i class="fa fa-calendar"></i> <span>Appointments</span></a>
+                        </li>
+                        <li>
+                            <a href="/staff/doctorSchedule/"><i class="fa fa-calendar-check-o"></i> <span>Doctor Schedule</span></a>
+                        </li>
+                        <li>
+                            <a href="/staff/pricing/"><i class="fa fa-cube"></i> <span>Pricing</span></a>
+                        </li>
+
+                        <li class="submenu">
+                            <a href="#"><i class="fa fa-user"></i> <span> Employees </span> <span class="menu-arrow"></span></a>
+                            <ul style="display: none;">
+                                <li><a href="/staff/employee/">Employees List</a></li>
+
+
+                            </ul>
+                        </li>
+
+
+                        <li class="submenu">
+                            <a href="#"><i class="fa fa-commenting-o"></i> <span> Blog</span> <span class="menu-arrow"></span></a>
+                            <ul style="display: none;">
+                                <li><a href="/staff/blogs/">Blog</a></li>
+
+                                <li><a href="/staff/addBlog/">Add Blog</a></li>
+
+                            </ul>
+                        </li>
+
+
+                        <li>
+                            <a href="/staff/emp_profile/"><i class="fa fa-user"></i> <span>My Profile</span></a>
+                        </li>
+
+
+                        <li>
+                            <a href="/staff/logout/"><i class="fa fa-sign-out"></i> <span>Logout</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+        {% endif %} {% block content %} {% endblock %}
+
+    </div>
+    <div class="sidebar-overlay" data-reff=""></div>
+
+    <script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/js/jquery.slimscroll.js' %}"></script>
+    <script src="{% static 'assets/js/select2.min.js' %}"></script>
+    <script src="{% static 'assets/js/app.js' %}"></script>
+    <script src="{% static 'assets/js/moment.min.js' %}"></script>
+    <script src="{% static 'assets/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+
+
+    {% block scripts %} {% endblock %}
+</body>
+
+
+<!-- add-employee24:07-->
+
+</html>

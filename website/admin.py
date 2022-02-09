@@ -32,13 +32,6 @@ class BookAppointmentAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Doctor)
-class DoctorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'created')
-    list_filter = ( 'created', 'updated')
-    search_fields = ('name', 'email')
-       
-
 
 @admin.register(DoctorSchedule)
 class DoctorScheduleAdmin(admin.ModelAdmin):
@@ -54,3 +47,9 @@ class SlotsAdmin(admin.ModelAdmin):
     list_filter = ('doctor', 'date')
     search_fields = ('doctor', 'date')
     raw_id_fields = ('doctor',)
+
+@admin.register(Pricing)
+class PricingAdmin(admin.ModelAdmin):
+    list_display = ('title', 'price')
+    list_filter = ( 'created_at', 'updated_at')
+    search_fields = ('title', 'price')

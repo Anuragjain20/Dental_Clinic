@@ -1,5 +1,4 @@
-{% extends "base.html" %} {% block content %}{% load static %}
-
+{% extends "base.html" %} {% block content %}{% load static %} {% load blog_tags %}
 <style>
     .disabled {
         opacity: 0.65;
@@ -55,13 +54,13 @@
                     <!-- Blog Thumbnail -->
                     <div class="blog-thumbnail">
                         <a href="{{blog.get_absolute_url}}">
-                            <img src="/static/{{blog.image}}" alt="">
+                            <img src="/media/{{blog.image}}" alt="">
                         </a>
                     </div>
                     <!-- Blog Content -->
                     <div class="blog-content">
                         <a href="{{blog.get_absolute_url}}" class="post-title">{{blog.title}}</a>
-                        <p>{{blog.body|truncatewords:30}}</p>
+                        <p>{{blog.body | truncatewords:30 | markdown | safe}}</p>
                         <div class="post-meta">
                             <a href="#"><i class="icon_clock_alt"></i> {{blog.publish}}</a>
                             <a href="#"><i class="icon_pencil-edit"></i> {{blog.author}}</a>

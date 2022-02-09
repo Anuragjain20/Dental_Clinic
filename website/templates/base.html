@@ -9,13 +9,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Title -->
-    <title>Dr. Raman Jain DMD.</title>
+    <title>Dento</title>
 
     <!-- Favicon -->
     <link rel="icon" href="{% static 'website/img/core-img/favicon.ico' %}">
 
     <!-- Core Stylesheet -->
     <link rel="stylesheet" href="  {% static 'website/css/style.css' %}"> {% block header %} {% endblock %}
+    <style>
+        .nav-text li a {
+            color: #fff!important;
+        }
+        
+        .nav-text li a:hover {
+            color: rgb(17, 0, 255)!important;
+        }
+    </style>
 
 </head>
 
@@ -29,41 +38,20 @@
 
     <!-- ***** Header Area Start ***** -->
     <header class="header-area">
-        <!-- Top Header Area -->
-        <div class="top-header-area">
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <!-- Top Content -->
-                    <div class="col-6 col-md-9 col-lg-8">
-                        <div class="top-header-content">
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="28 Jackson Street, Chicago, 7788569 USA"><i class="fa fa-map-marker"></i> <span>28 Jackson Street, Chicago, 7788569 USA</span></a>
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="info.dento@gmail.com"><i class="fa fa-envelope"></i> <span>info.dento@gmail.com</span></a>
-                        </div>
-                    </div>
-                    <!-- Top Header Social Info -->
-                    <div class="col-6 col-md-3 col-lg-4">
-                        <div class="top-header-social-info text-right">
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="Facebook"><i class="fa fa-facebook"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="Twitter"><i class="fa fa-twitter"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="Google Plus"><i class="fa fa-google-plus"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="bottom" title="Linkedin"><i class="fa fa-linkedin"></i></a>
 
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Top Header End -->
 
         <!-- Main Header Start -->
-        <div class="main-header-area">
-            <div class="classy-nav-container breakpoint-off">
+        <div class="main-header-area text-light  " style="background-color: #009efb!important;">
+            <div class="classy-nav-container  text-light breakpoint-off navbar-dark">
                 <div class="container">
                     <!-- Classy Menu -->
-                    <nav class="classy-navbar justify-content-between" id="dentoNav">
+                    <nav class="classy-navbar justify-content-between " id="dentoNav">
 
                         <!-- Logo -->
-                        <a class="nav-brand" href="/"><img src="{% static 'website/img/core-img/logo.png' %}" alt=""></a>
+                        <a class="nav-brand text-light" href="/">
+                            <img src="{% static 'assets/img/logo.png' %}" width="35" height="35" alt=""> <span>Dento</span>
+
+                        </a>
 
                         <!-- Navbar Toggler -->
                         <div class="classy-navbar-toggler">
@@ -71,7 +59,7 @@
                         </div>
 
                         <!-- Menu -->
-                        <div class="classy-menu">
+                        <div class="classy-menu ">
 
                             <!-- Close Button -->
                             <div class="classycloseIcon">
@@ -80,12 +68,11 @@
 
                             <!-- Nav Start -->
                             <div class="classynav">
-                                <ul id="nav">
+                                <ul id="nav" class="nav-text">
                                     <li><a href="/">Home</a></li>
 
 
-                                    <li><a href="{% url 'website:service'  %}">Service</a></li>
-                                    <li><a href="pricing.html">Pricing</a></li>
+                                    <li><a href="{% url 'website:pricing' %}">Pricing</a></li>
                                     <li><a href="{% url 'website:all_blogs'  %}">Blog</a>
 
                                     </li>
@@ -117,7 +104,7 @@
                 <!-- Single Footer Widget -->
                 <div class="col-12 col-sm-6 col-lg-4">
                     <div class="single-footer-widget">
-                        <a href="./index.html" class="d-block mb-4"><img src="{% static 'website/img/core-img/logo.png' %}" alt=""></a>
+                        <a href="/" class="d-block mb-4"><img src="{% static 'website/img/core-img/logo.png' %}" alt=""></a>
                         <p>Etiam sutor risus, dapibus act elefend katen, lacinia sitamet denim. Mauris sagittis kansa interdum dignissim.</p>
                         <div class="footer-contact">
                             <p><i class="icon_pin"></i> 28 Jackson Street, Chicago, 7788569 USA</p>
@@ -146,53 +133,27 @@
 
                 <!-- Single Footer Widget -->
                 <div class="col-12 col-sm-6 col-lg">
-                    <div class="single-footer-widget">
+                    <div class="single-footer-widget mx-auto text-center">
                         <!-- Widget Title -->
                         <h5 class="widget-title">Quick Link</h5>
 
                         <!-- Quick Links Nav -->
                         <nav>
                             <ul class="quick-links">
-                                <li><a href="#">About</a></li>
-                                <li><a href="#">FAQs</a></li>
-                                <li><a href="#">Contact</a></li>
-                                <li><a href="#">Policy</a></li>
-                                <li><a href="#">News</a></li>
-                                <li><a href="#">Advisors</a></li>
-                                <li><a href="#">Careers</a></li>
-                                <li><a href="#">Dentist</a></li>
-                                <li><a href="#">Services</a></li>
-                                <li><a href="#">Legals</a></li>
+
+                                <li><a href="{% url 'website:contact'  %}">Contact</a></li>
+
+                                <li><a href="{% url 'website:all_blogs'  %}">Blog</a></li>
+                                <li><a href="{% url 'website:pricing' %}">Pricing</a></li>
+
+
+
                             </ul>
                         </nav>
                     </div>
                 </div>
 
-                <!-- Single Footer Widget -->
-                <div class="col-12 col-sm-6 col-lg">
-                    <div class="single-footer-widget">
-                        <!-- Widget Title -->
-                        <h5 class="widget-title">Newsletter</h5>
 
-                        <p>We will send out weekly newest article and some great offers</p>
-                        <!-- Newsletter Form -->
-                        <div class="footer-newsletter-form">
-                            <form action="#" method="post">
-                                <input type="email" name="nl-email" value="" placeholder="Email Address">
-                                <button type="submit"><i class="fa fa-paper-plane" aria-hidden="true"></i></button>
-                            </form>
-                        </div>
-
-                        <!-- Social Info -->
-                        <div class="footer-social-info">
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="Facebook"><i class="fa fa-facebook"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="Twitter"><i class="fa fa-twitter"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="Google Plus"><i class="fa fa-google-plus"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="Linkedin"><i class="fa fa-linkedin"></i></a>
-                            <a href="#" data-toggle="tooltip" data-placement="top" title="Pinterest"><i class="fa fa-pinterest"></i></a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 

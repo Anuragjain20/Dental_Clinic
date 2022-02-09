@@ -1,0 +1,123 @@
+{% extends 'basic.html' %} {% block style %}
+<style>
+    .body-main {
+        background: #ffffff;
+        border-bottom: 15px solid #1E1F23;
+        border-top: 15px solid #1E1F23;
+        /* margin-top: 30px;
+        margin-bottom: 30px;
+        padding: 40px 30px !important; */
+        /* position: relative; */
+        box-shadow: 0 1px 21px #808080;
+        font-size: 10px
+    }
+    
+    td {
+        font-size: 1.2vw;
+    }
+    
+    .main thead {
+        background: #1E1F23;
+        color: #fff;
+    }
+    
+    .img {
+        height: 10vh;
+    }
+    
+    h1 {
+        text-align: center
+    }
+</style>
+
+{% endblock %} {% block content %}
+<div class="page-wrapper">
+    <div class="container m-auto p-auto my-5 content">
+        <div class="row mx-auto">
+            <div class="col-md-12 mx-auto  body-main">
+                <div class="col-md-12">
+                    <div class="row pt-2">
+                        <div class="col-md-4"> <img class="img img-fluid" alt="Invoce Template" src="/static/website/img/core-img/logo.png" /> </div>
+                        <div class="col-md-8 text-right">
+                            <h4 style="color: #00afef;"><strong>DENTO</strong></h4>
+                            <p>28 Jackson Street, Chicago, 7788569 USA</p>
+                            <p>+84-2252-2250-122</p>
+                            <p>example@gmail.com</p>
+                        </div>
+                    </div> <br />
+                    <div class="row">
+                        <div class="col-md-12 text-center">
+                            <h2>APPOINTMENT CONFIRMATION</h2>
+                            <br>
+                            <h4>{{appointment.conformation_id}}</h4>
+                        </div>
+                    </div> <br />
+                    <div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" colspan="2">
+                                        <h4 class="text-center">Description</h4>
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="col-md-9">Name</td>
+                                    <td class="col-md-3">{{appointment.name}} </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-9">Email</td>
+                                    <td class="col-md-3">{{appointment.email}} </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-9">Doctor</td>
+                                    <td class="col-md-3">{{appointment.doctor.first_name}} {{appointment.doctor.last_name}} </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-9">Phone</td>
+                                    <td class="col-md-3">{{appointment.phone}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-9">Date</td>
+                                    <td class="col-md-3">{{appointment.date}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-9">Time Slot</td>
+                                    <td class="col-md-3">{{appointment.slot.start_time}} - {{appointment.slot.end_time}}</td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-9">Message</td>
+                                    <td class="col-md-3">{{appointment.message}}</td>
+                                </tr>
+                                <tr>
+                                    <td>
+
+                                    </td>
+                                    <td></td>
+                                </tr>
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--    <div>
+                    <div class="col-md-12">
+                        <p><b>Date :</b>{{date_in_word}}</p> <br />
+                        <p><b>Dento</b></p>
+                    </div>
+                -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+{% endblock %}

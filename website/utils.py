@@ -18,7 +18,7 @@ def check_doctor_is_available(doctor, date):
     objs = DoctorSchedule.objects.filter(doctor=doctor)
     for obj in objs:
         
-        if obj.start_date  <= date and date <= obj.end_date:
+        if obj.start_date  <= date and date <= obj.end_date :
             return True
     return False
 
@@ -50,7 +50,7 @@ def save_pdf(params:dict):
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result,link_callback=fetch_resources)
 
-    file_name = str(uuid.uuid4())
+    file_name = params['conformationid'] 
     try:
         with open(str(settings.BASE_DIR) + f'/pdfs/{file_name}.pdf', 'wb+') as output:
                 
