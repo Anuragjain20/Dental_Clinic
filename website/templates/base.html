@@ -24,6 +24,11 @@
         .nav-text li a:hover {
             color: rgb(17, 0, 255)!important;
         }
+        /* html,
+        body {
+            width: 100%;
+            overflow-x: hidden;
+        } */
     </style>
 
 </head>
@@ -145,7 +150,9 @@
 
                                 <li><a href="{% url 'website:all_blogs'  %}">Blog</a></li>
                                 <li><a href="{% url 'website:pricing' %}">Pricing</a></li>
-
+                                <li>
+                                    <a href="{% url 'staff:dashboard' %}">Dashboard</a>
+                                </li>
 
 
                             </ul>
@@ -158,22 +165,22 @@
         </div>
 
         <!-- Copywrite Area -->
-        <div class="container">
+        <!-- <div class="container">
             <div class="row">
                 <div class="col-12">
                     <div class="copywrite-content">
                         <p>
                             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            Copyright &copy;
-                            <script>
-                                document.write(new Date().getFullYear());
-                            </script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib --- Downloaded from <a href="https://themeslab.org/" target="_blank">Themeslab</a></a>
-                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        </p>
-                    </div>
-                </div>
-            </div>
+        Copyright &copy;
+        <script>
+            document.write(new Date().getFullYear());
+        </script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib --- Downloaded from <a href="https://themeslab.org/" target="_blank">Themeslab</a></a>
+        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+        </p>
         </div>
+        </div>
+        </div>
+        </div> -->
     </footer>
     <!-- ***** Footer Area End ***** -->
 
